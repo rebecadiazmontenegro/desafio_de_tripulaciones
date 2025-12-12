@@ -18,7 +18,37 @@ const getUserModel = async (email) => {
   return result;
 };
 
-const createUser = async (user) => {
+const getAllManagersModel = async () => {
+  let client, result;
+  try {
+    client = await pool.connect();
+    const data = await client.query(queries.getAllManagers);
+    result = data.rows; 
+  } catch (err) {
+    console.error("Error en getAllManagers:", err);
+    throw err;
+  } finally {
+    if (client) client.release();
+  }
+  return result;
+};
+
+const getAllWorkersModel = async () => {
+  let client, result;
+  try {
+    client = await pool.connect();
+    const data = await client.query(queries.getAllWorkers);
+    result = data.rows; 
+  } catch (err) {
+    console.error("Error en getAllWorkers:", err);
+    throw err;
+  } finally {
+    if (client) client.release();
+  }
+  return result;
+};
+
+const createUserModel = async (user) => {
   const { nombre, apellidos, email, password, departamento, rol } = user;
   let client;
 
@@ -43,7 +73,28 @@ const createUser = async (user) => {
   }
 };
 
+const deleteUserByEmail = async (email) => {
+  let client;
+  try {
+    client = await pool.connect();
+    const result = await client.query(
+      queries.deleteUserByEmail,
+      [email]
+    );
+    return result.rows[0]; 
+  } catch (err) {
+    console.error("Error en deleteUserByEmail:", err);
+    throw err;
+  } finally {
+    if (client) client.release();
+  }
+};
+
+
 module.exports = {
-  createUser,
+  createUserModel,
   getUserModel,
+  getAllManagersModel,
+  getAllWorkersModel,
+  deleteUserByEmail
 };

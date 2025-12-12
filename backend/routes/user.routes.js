@@ -28,4 +28,18 @@ router.get("/logout", (req, res) => {
   return res.status(200).json({ message: "Logout exitoso" });
 });
 
+router.get(
+  "/managers",
+  authMiddleware, 
+  usersController.getAllManagers
+);
+
+router.get(
+  "/workers",
+  authMiddleware, 
+  usersController.getAllWorkers
+);
+
+router.delete("/:email", authMiddleware, usersController.deleteUser);
+
 module.exports = router;
