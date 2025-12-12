@@ -19,5 +19,8 @@
   "homepage": "https://github.com/rebecadiazmontenegro/desafio_de_tripulaciones#readme",
   "dependencies": {
     "nodemon": "^3.1.11"
+  },
+  "devDependencies": {
+    "create-react-component-folder": "^0.3.7"
   }
 }
