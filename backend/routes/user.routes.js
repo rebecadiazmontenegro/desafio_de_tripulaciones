@@ -2,12 +2,19 @@ const express = require("express");
 const router = express.Router();
 const usersController = require("../controllers/user.controller");
 const jwt = require("jsonwebtoken");
-const authMiddleware = require("../middlewares/authMiddleware")
+const authMiddleware = require("../middlewares/authMiddleware");
+const {
+  validateCreateUser,
+  validateLoginUser,
+} = require("../validator/users.validator");
 
-router.post("/login", usersController.loginUser);
+router.post("/login", validateLoginUser, usersController.loginUser);
 
 router.post(
-  "/signup", authMiddleware, usersController.signUp
+  "/signup",
+  authMiddleware,
+  validateCreateUser,
+  usersController.signUp
 );
 
 router.get("/logout", (req, res) => {
