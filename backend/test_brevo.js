@@ -7,7 +7,6 @@ let apiKey = apiInstance.authentications['apiKey'];
 // ⚠️ PELIGRO: Para esta prueba pega la clave aquí, 
 // pero NUNCA subas este archivo a GitHub con la clave puesta.
 // En el proyecto real usarás process.env.BREVO_API_KEY
-apiKey.apiKey = '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';
 
 // 2. Preparar el email
 let sendSmtpEmail = new Brevo.SendSmtpEmail();
