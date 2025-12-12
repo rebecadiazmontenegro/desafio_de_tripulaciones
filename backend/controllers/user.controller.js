@@ -103,4 +103,10 @@ const signUp = async (req, res) => {
 };
 
 
-module.exports = { signUp, loginUser };
+function logOut(req, res) {
+  res.clearCookie("token");
+  res.redirect("/login");
+}
+
+
+module.exports = { signUp, loginUser, logOut };
