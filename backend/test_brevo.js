@@ -2,7 +2,7 @@ const Brevo = require('@getbrevo/brevo');
 
 // 1. Configuración de la autenticación
 let apiInstance = new Brevo.TransactionalEmailsApi();
-let apiKey = apiInstance.authentications['apiKey'];
+// let apiKey = apiInstance.authentications['apiKey'];
 
 // ⚠️ PELIGRO: Para esta prueba pega la clave aquí, 
 // pero NUNCA subas este archivo a GitHub con la clave puesta.
