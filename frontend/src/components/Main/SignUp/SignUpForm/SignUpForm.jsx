@@ -83,7 +83,7 @@ const SignUpAdminForm = () => {
           onChange={handleChange}
           required
         >
-          <option value="relojes">Relojes</option>
+          <option value="relojes">Relojes inteligentes</option>
           <option value="portatiles">Portátiles</option>
           <option value="moviles">Móviles</option>
           <option value="accesorios">Accesorios</option>
