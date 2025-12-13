@@ -9,11 +9,6 @@ function App() {
     <>
       <BrowserRouter>
         <Header />
-        <Link to="/signup">
-        <button className="showProfileButton">
-          SignUp
-        </button>
-      </Link>
         <Main />
       </BrowserRouter>
         <Footer />
