@@ -30,15 +30,18 @@ app.use("/user", usersRoutes);
 //   });
 // }
 
+// Configuración según el entorno
 if (process.env.NODE_ENV === "production") {
+  // Servir archivos estáticos del frontend compilado
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
   
-  // IMPORTANTE: Esta ruta debe ir al final y capturar TODAS las rutas
-  // que no sean de API, para que React Router las maneje
+  // Catch-all: redirigir todas las rutas restantes a index.html
+  // Esto permite que React Router maneje el enrutamiento del cliente
   app.get("*", (req, res) => {
     res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
   });
 } else {
+  // En desarrollo, servir archivos estáticos locales
   app.use(express.static(path.join(__dirname, "public")));
 }
 
