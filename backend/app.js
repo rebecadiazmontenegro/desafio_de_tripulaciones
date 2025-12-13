@@ -23,11 +23,23 @@ app.use(express.static(path.join(__dirname, "public")));
 const usersRoutes = require("./routes/user.routes");
 app.use("/user", usersRoutes);
 
-if (process.env.NODE_ENV==="production") {
+// if (process.env.NODE_ENV==="production") {
+//   app.use(express.static(path.join(__dirname, "../frontend/dist")));
+//   app.get("/", (req, res) => {
+//     res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
+//   });
+// }
+
+if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
-  app.get("/", (req, res) => {
+  
+  // IMPORTANTE: Esta ruta debe ir al final y capturar TODAS las rutas
+  // que no sean de API, para que React Router las maneje
+  app.get("*", (req, res) => {
     res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
   });
+} else {
+  app.use(express.static(path.join(__dirname, "public")));
 }
 
 app.listen(port, () => {
