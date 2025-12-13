@@ -1,5 +1,7 @@
 const API_URL = import.meta.env.VITE_API_URL; 
 
+console.log("❤️ API_URL en navegador:", import.meta.env.VITE_API_URL);
+
 export const signUp = async (form, token) => {
   try {
     const response = await fetch(`${API_URL}/user/signup`, {
