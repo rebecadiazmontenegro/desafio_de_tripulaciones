@@ -7,7 +7,7 @@ const queries = {
     `,
 
   getAllManagers: `
-  SELECT nombre, apellidos
+  SELECT nombre, apellidos, departamento
   FROM users
   WHERE rol = 'manager';
 `,
