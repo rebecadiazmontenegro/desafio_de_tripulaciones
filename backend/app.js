@@ -17,15 +17,24 @@ app.use(
     credentials: true,
   })
 );
+
 app.use('/api-jsdoc', express.static(path.join(__dirname, '/jsondocs')));
 app.use(express.static(path.join(__dirname, "public")));
 
+// Rutas de API
 const usersRoutes = require("./routes/user.routes");
 app.use("/user", usersRoutes);
 
-if (process.env.NODE_ENV==="production") {
+if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
+  
+  // Ruta raíz
   app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
+  });
+  
+  // AÑADE ESTA RUTA para /signup específicamente
+  app.get("/signup", (req, res) => {
     res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
   });
 }
