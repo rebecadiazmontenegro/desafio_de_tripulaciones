@@ -1,6 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL || "https://desafio-de-tripulaciones.onrender.com";
-
-
+const API_URL = import.meta.env.VITE_API_URL 
 
 export const signUp = async (form, token) => {
   try {
