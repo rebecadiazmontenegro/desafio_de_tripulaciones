@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require("path");
 const helmet = require("helmet");
 const cors = require("cors");
 require("dotenv").config();
@@ -19,6 +20,13 @@ app.use(
 
 const usersRoutes = require("./routes/user.routes");
 app.use("/user", usersRoutes);
+
+if (process.env.NODE_ENV==="production") {
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+  app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
+  });
+}
 
 app.listen(port, () => {
   console.log(`Servidor iniciado en http://localhost:${port}`);
