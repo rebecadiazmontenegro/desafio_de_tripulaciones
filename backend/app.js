@@ -23,26 +23,11 @@ app.use(express.static(path.join(__dirname, "public")));
 const usersRoutes = require("./routes/user.routes");
 app.use("/user", usersRoutes);
 
-// if (process.env.NODE_ENV==="production") {
-//   app.use(express.static(path.join(__dirname, "../frontend/dist")));
-//   app.get("/", (req, res) => {
-//     res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
-//   });
-// }
-
-// Configuración según el entorno
-if (process.env.NODE_ENV === "production") {
-  // Servir archivos estáticos del frontend compilado
+if (process.env.NODE_ENV==="production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
-  
-  // Catch-all: redirigir todas las rutas restantes a index.html
-  // Esto permite que React Router maneje el enrutamiento del cliente
-  app.get("*", (req, res) => {
+  app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
   });
-} else {
-  // En desarrollo, servir archivos estáticos locales
-  app.use(express.static(path.join(__dirname, "public")));
 }
 
 app.listen(port, () => {
