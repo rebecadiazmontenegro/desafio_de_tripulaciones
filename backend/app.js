@@ -17,6 +17,8 @@ app.use(
     credentials: true,
   })
 );
+app.use('/api-jsdoc', express.static(path.join(__dirname, '/jsondocs')));
+app.use(express.static(path.join(__dirname, "public")));
 
 const usersRoutes = require("./routes/user.routes");
 app.use("/user", usersRoutes);
