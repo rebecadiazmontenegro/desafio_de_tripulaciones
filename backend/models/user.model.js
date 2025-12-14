@@ -89,6 +89,32 @@ const deleteUserByEmail = async (email) => {
     if (client) client.release();
   }
 };
+const getUserByIdModel = async (id) => {
+  const client = await pool.connect();
+  try {
+    const query = "SELECT * FROM users WHERE id = $1";
+    const result = await client.query(query, [id]);
+    return result.rows[0];
+  } catch (error) {
+    console.error("Error en getUserByIdModel:", error);
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
+const updatePasswordModel = async (userId, hashedPassword) => {
+  const client = await pool.connect();
+  try {
+    const query = "UPDATE users SET password = $1 WHERE id = $2";
+    await client.query(query, [hashedPassword, userId]);
+  } catch (error) {
+    console.error("Error en updatePasswordModel:", error);
+    throw error;
+  } finally {
+    client.release();
+  }
+};
 
 
 module.exports = {
@@ -96,5 +122,7 @@ module.exports = {
   getUserModel,
   getAllManagersModel,
   getAllWorkersModel,
-  deleteUserByEmail
+  deleteUserByEmail,
+    getUserByIdModel,
+  updatePasswordModel,
 };
