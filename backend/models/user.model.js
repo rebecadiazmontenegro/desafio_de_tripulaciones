@@ -18,7 +18,37 @@ const getUserModel = async (email) => {
   return result;
 };
 
-const createUser = async (user) => {
+const getAllManagersModel = async () => {
+  let client, result;
+  try {
+    client = await pool.connect();
+    const data = await client.query(queries.getAllManagers);
+    result = data.rows; 
+  } catch (err) {
+    console.error("Error en getAllManagers:", err);
+    throw err;
+  } finally {
+    if (client) client.release();
+  }
+  return result;
+};
+
+const getAllWorkersModel = async () => {
+  let client, result;
+  try {
+    client = await pool.connect();
+    const data = await client.query(queries.getAllWorkers);
+    result = data.rows; 
+  } catch (err) {
+    console.error("Error en getAllWorkers:", err);
+    throw err;
+  } finally {
+    if (client) client.release();
+  }
+  return result;
+};
+
+const createUserModel = async (user) => {
   const { nombre, apellidos, email, password, departamento, rol } = user;
   let client;
 
@@ -43,8 +73,56 @@ const createUser = async (user) => {
   }
 };
 
+const deleteUserByEmail = async (email) => {
+  let client;
+  try {
+    client = await pool.connect();
+    const result = await client.query(
+      queries.deleteUserByEmail,
+      [email]
+    );
+    return result.rows[0]; 
+  } catch (err) {
+    console.error("Error en deleteUserByEmail:", err);
+    throw err;
+  } finally {
+    if (client) client.release();
+  }
+};
+const getUserByIdModel = async (id) => {
+  const client = await pool.connect();
+  try {
+    const query = "SELECT * FROM users WHERE id = $1";
+    const result = await client.query(query, [id]);
+    return result.rows[0];
+  } catch (error) {
+    console.error("Error en getUserByIdModel:", error);
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
+const updatePasswordModel = async (userId, hashedPassword) => {
+  const client = await pool.connect();
+  try {
+    const query = "UPDATE users SET password = $1 WHERE id = $2";
+    await client.query(query, [hashedPassword, userId]);
+  } catch (error) {
+    console.error("Error en updatePasswordModel:", error);
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
 
 module.exports = {
-  createUser,
+  createUserModel,
   getUserModel,
+  getAllManagersModel,
+  getAllWorkersModel,
+  deleteUserByEmail,
+    getUserByIdModel,
+  updatePasswordModel,
 };
