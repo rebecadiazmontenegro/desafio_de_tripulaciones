@@ -11,20 +11,20 @@ const ManagerDashboard = ({ userName }) => {
   };
 
   return (
-    <div>
-      <div>
+    <section>
+      <article>
         <h1>Bienvenido, {userName}</h1>
         <span>Manager</span>
-      </div>
-      <button onClick={() => navigate("/change-password")}>
+      </article>
+      <button onClick={() => navigate("/change/password")}>
         <h3>Cambiar Contraseña</h3>
       </button>
-      <div>
+      <article>
         <h2>Panel de Manager</h2>
         <p>Gestiona tu equipo y supervisa proyectos</p>
-      </div>
+      </article>
 
-      <div>
+      <article>
         <button onClick={() => navigate("/signup")}>
           <div>👥</div>
           <h3>Crear Worker</h3>
@@ -42,12 +42,12 @@ const ManagerDashboard = ({ userName }) => {
           <h3>CHAT</h3>
           <p>Administra los proyectos activos</p>
         </button>
-      </div>
+      </article>
 
       <button onClick={handleLogout}>
         Cerrar Sesión
       </button>
-    </div>
+    </section>
   );
 };
 

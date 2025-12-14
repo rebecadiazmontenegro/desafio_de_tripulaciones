@@ -28,7 +28,6 @@ const ChangePassword = () => {
     setSuccess("");
     setLoading(true);
 
-    // Validaciones
     if (!formData.currentPassword || !formData.newPassword || !formData.confirmPassword) {
       setError("Todos los campos son requeridos");
       setLoading(false);
@@ -69,13 +68,13 @@ const ChangePassword = () => {
   };
 
   return (
-    <div>
-      <div>
+    <section>
+      <article>
         <h1>Cambiar Contraseña</h1>
         <p>Actualiza tu contraseña por una más segura</p>
-      </div>
+      </article>
 
-      <div>
+      <article>
         {error && (
           <div>
             <p>{error}</p>
@@ -88,7 +87,7 @@ const ChangePassword = () => {
           </div>
         )}
 
-        <div>
+        <article>
           <label htmlFor="currentPassword">Contraseña Actual</label>
           <input
             type="password"
@@ -96,12 +95,12 @@ const ChangePassword = () => {
             name="currentPassword"
             value={formData.currentPassword}
             onChange={handleChange}
-            placeholder="••••••••"
+            placeholder="Introduce tu contraseña actual"
             disabled={loading}
           />
-        </div>
+        </article>
 
-        <div>
+        <article>
           <label htmlFor="newPassword">Nueva Contraseña</label>
           <input
             type="password"
@@ -109,12 +108,12 @@ const ChangePassword = () => {
             name="newPassword"
             value={formData.newPassword}
             onChange={handleChange}
-            placeholder="••••••••"
+            placeholder="Introduce tu nueva contraseña"
             disabled={loading}
           />
-        </div>
+        </article>
 
-        <div>
+        <article>
           <label htmlFor="confirmPassword">Confirmar Nueva Contraseña</label>
           <input
             type="password"
@@ -122,10 +121,10 @@ const ChangePassword = () => {
             name="confirmPassword"
             value={formData.confirmPassword}
             onChange={handleChange}
-            placeholder="••••••••"
+            placeholder="Confirma tu nueva contraseña"
             disabled={loading}
           />
-        </div>
+        </article>
 
         <button onClick={handleSubmit} disabled={loading}>
           {loading ? "Cambiando..." : "Cambiar Contraseña"}
@@ -134,8 +133,8 @@ const ChangePassword = () => {
         <button onClick={() => navigate("/dashboard")} disabled={loading}>
           Cancelar
         </button>
-      </div>
-    </div>
+      </article>
+    </section>
   );
 };
 
