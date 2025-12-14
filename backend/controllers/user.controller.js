@@ -182,6 +182,54 @@ const deleteUser = async (req, res) => {
   }
 };
 
+const changePassword = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      errors: errors.array(),
+    });
+  }
+
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const userId = req.user.id; // Obtenido del token JWT
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ 
+        message: "Contraseña actual y nueva contraseña son requeridas" 
+      });
+    }
+
+    // Obtener usuario
+    const user = await usersModels.getUserByIdModel(userId);
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    // Verificar contraseña actual
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Contraseña actual incorrecta" });
+    }
+
+    // Hash de la nueva contraseña
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Actualizar contraseña
+    await usersModels.updatePasswordModel(userId, hashedPassword);
+
+    return res.status(200).json({
+      message: "Contraseña actualizada correctamente",
+    });
+  } catch (error) {
+    console.error("Error al cambiar contraseña:", error);
+    res.status(500).json({
+      message: "Error al cambiar contraseña",
+      error: error.message,
+    });
+  }
+};
 
 module.exports = {
   signUp,
@@ -189,5 +237,7 @@ module.exports = {
   logOut,
   deleteUser,
   getAllManagers,
-  getAllWorkers
+  getAllWorkers,
+  changePassword,
+
 };
