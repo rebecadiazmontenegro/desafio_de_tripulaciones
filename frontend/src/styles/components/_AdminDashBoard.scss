@@ -1,4 +1,4 @@
-.managerDashboard {
+.adminDashboard {
   position: relative;
   z-index: 1;
   min-height: 100vh;
@@ -39,16 +39,10 @@
   .cardButtons {
     display: flex;
     flex-direction: column;
-  }
-
-  .chatTeam {
-    display: flex;
-    flex-direction: column;
     gap: 24px;
     margin-top: 30px;
 
-    .teamButton,
-    .chatButton {
+    button {
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -67,83 +61,9 @@
       transition: all 0.3s ease;
       text-align: left;
 
-      svg {
-        color: var(--dark);
-      }
-
-      h3 {
-        font-size: 28px;
-        font-weight: var(--font-medium);
-        color: var(--dark);
-        margin-bottom: 8px;
-      }
-
       p {
-        font-size: 18px;
-        color: rgba(6, 18, 48, 0.8);
-        margin-top: 0px;
+        text-align: center;
       }
-
-      &:hover {
-        transform: translateY(-6px);
-        background-color: rgba(255, 255, 255, 0.35);
-      }
-
-      &:active {
-        transform: translateY(0);
-      }
-    }
-  }
-
-  .createManagerButton {
-    margin-top: 25px;
-
-    .guideButton {
-      display: flex;
-      flex-direction: row;
-      justify-content: center;
-      align-items: center;
-      font-weight: var(--font-medium);
-      width: 390px;
-      margin-top: 20px;
-      gap: 8px;
-      border-radius: 12px;
-      background-color: rgba(255, 255, 255, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.8);
-      box-shadow: 6px 6px 20px rgba(6, 18, 48, 0.4);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-
-      transition: all 0.3s ease;
-
-      svg {
-        color: var(--dark);
-      }
-
-      &:hover {
-        transform: translateY(-6px);
-        background-color: rgba(255, 255, 255, 0.35);
-      }
-    }
-
-    .createButton {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      padding: 24px;
-      border-radius: 16px;
-      cursor: pointer;
-
-      background-color: rgba(255, 255, 255, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.8);
-      box-shadow: 6px 6px 20px rgba(6, 18, 48, 0.4);
-
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-
-      transition: all 0.3s ease;
 
       svg {
         color: var(--dark);
@@ -224,7 +144,7 @@
 }
 
 /* Animación de entrada para toda la sección */
-.managerDashboard {
+.adminDashboard {
   animation: fadeIn 0.5s ease-in;
 }
 
@@ -245,20 +165,16 @@
   animation: slideIn 0.6s ease-out forwards;
 }
 
-.chatTeam button:nth-child(1) {
+.cardButtons button:nth-child(1) {
   animation-delay: 0.2s;
 }
 
-.chatTeam button:nth-child(2) {
+.cardButtons button:nth-child(2) {
   animation-delay: 0.3s;
 }
 
-.createManagerButton button:nth-child(1) {
+.cardButtons button:nth-child(3) {
   animation-delay: 0.4s;
-}
-
-.createManagerButton button:nth-child(2) {
-  animation-delay: 0.5s;
 }
 
 @keyframes slideIn {
@@ -279,11 +195,11 @@
 }
 
 .changePasswordButton {
-  animation-delay: 0.6s;
+  animation-delay: 0.5s;
 }
 
 .logOutButton {
-  animation-delay: 0.7s;
+  animation-delay: 0.6s;
 }
 
 @keyframes fadeInUp {
@@ -308,7 +224,7 @@
 }
 
 @media (min-width: 819px) and (max-width: 1023px) {
-  .managerDashboard {
+  .adminDashboard {
     h1 {
       font-size: 75px;
     }
@@ -324,15 +240,6 @@
       grid-template-columns: repeat(2, 1fr);
       grid-gap: 20px;
       margin-top: 30px;
-
-      .chatTeam,
-      .createManagerButton {
-        display: contents;
-      }
-
-      .guideButton {
-        margin-top: 0;
-      }
 
       button {
         width: 100%;
@@ -369,7 +276,7 @@
 }
 
 @media (min-width: 1024px) and (max-width: 1440px) {
-  .managerDashboard {
+  .adminDashboard {
     padding: 0 40px;
 
     h1 {
@@ -386,24 +293,18 @@
       flex-direction: row;
       gap: 20px;
 
-      .chatTeam,
-      .createManagerButton {
-        flex-direction: row;
-        gap: 20px;
-
-        button {
-          width: 320px;
-          h3 {
-            font-size: 26px;
-            font-weight: var(--font-medium);
-          }
-          p {
-            font-size: 18px;
-          }
-          svg {
-            width: 50px;
-            height: 50px;
-          }
+      button {
+        width: 320px;
+        h3 {
+          font-size: 26px;
+          font-weight: var(--font-medium);
+        }
+        p {
+          font-size: 18px;
+        }
+        svg {
+          width: 50px;
+          height: 50px;
         }
       }
     }

@@ -92,7 +92,6 @@
           transform: translateY(0);
         }
       }
-
     }
 
     .profileButtons {
@@ -146,6 +145,133 @@
   }
 }
 
+/* Animación de entrada para toda la sección */
+.workerDashboard {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Panel de info con animación suave */
+.workerDashboard .infoPanel {
+  animation: slideDown 0.5s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animación de despliegue de cartas para botones de chat */
+.chatButtons button {
+  opacity: 0;
+  transform: perspective(1000px) rotateY(-90deg) translateX(-100px) scale(0.5);
+  transform-origin: left center;
+  animation: cardFlip 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes cardFlip {
+  0% {
+    opacity: 0;
+    transform: perspective(1000px) rotateY(-90deg) translateX(-100px) scale(0.5);
+  }
+  50% {
+    opacity: 1;
+    transform: perspective(1000px) rotateY(-10deg) translateX(0) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(1000px) rotateY(0deg) translateX(0) scale(1);
+  }
+}
+
+/* Retrasos escalonados */
+.chatButtons button:nth-child(1) {
+  animation-delay: 0.2s;
+}
+
+.chatButtons button:nth-child(2) {
+  animation-delay: 0.35s;
+}
+
+/* Animación para botones de perfil */
+.profileButtons button {
+  opacity: 0;
+  transform: translateY(30px) scale(0.8);
+  animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.profileButtons button:nth-child(1) {
+  animation-delay: 0.5s;
+}
+
+.profileButtons button:nth-child(2) {
+  animation-delay: 0.65s;
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Efecto hover mejorado */
+.workerButtons button {
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.workerButtons button:hover {
+  transform: perspective(1000px) rotateY(5deg) translateY(-10px) scale(1.05);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+  z-index: 10;
+}
+
+/* Efecto de brillo al pasar el ratón */
+.workerButtons button {
+  position: relative;
+  overflow: hidden;
+}
+
+.workerButtons button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.workerButtons button:hover::before {
+  left: 100%;
+}
+
 @media (min-width: 819px) and (max-width: 1023px) {
   .workerDashboard {
     h1 {
@@ -167,13 +293,13 @@
 
       .chatButtons,
       .profileButtons {
-        display: flex; 
+        display: flex;
         flex-direction: column;
         align-items: center;
         width: 100%;
 
         .chatButton {
-            width: 100%;
+          width: 100%;
         }
 
         .guideButton {
@@ -227,8 +353,8 @@
             height: 50px;
           }
         }
-        .guideButton{
-            margin-top: 0;
+        .guideButton {
+          margin-top: 0;
         }
       }
     }
