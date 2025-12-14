@@ -27,8 +27,8 @@
     font-size: 24px;
     font-weight: var(--font-medium);
     color: var(--dark);
-    background-color: rgba(255, 255, 255, 0.50); 
-    border: 1px solid rgba(255, 255, 255, 0.80); 
+    background-color: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.8);
     box-shadow: 5px 5px 15px #384974;
     border-radius: 12px;
     backdrop-filter: blur(10px);
@@ -40,7 +40,7 @@
 
     &:hover {
       background-color: rgba(255, 255, 255, 0.35);
-      transform: translateY(-2px);
+      transform: translateY(-5px);
     }
 
     &:active {
