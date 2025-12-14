@@ -37,7 +37,7 @@ const ManagerDashboard = ({ userName }) => {
 
         <button onClick={() => navigate("/chat")}>
           <MessageCircle size={28} />
-          <h3>CHAT</h3>
+          <h3>Chat</h3>
           <p>Administra los proyectos activos</p>
         </button>
       </article>

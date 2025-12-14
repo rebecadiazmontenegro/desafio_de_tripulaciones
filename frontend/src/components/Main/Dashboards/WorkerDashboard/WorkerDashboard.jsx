@@ -25,7 +25,7 @@ const WorkerDashboard = ({ userName }) => {
       <article>
         <button onClick={() => navigate("/chat")}>
           <MessageCircle size={28} />
-          <h3>CHAT</h3>
+          <h3>Chat</h3>
           <p>Visualiza y completa tus tareas</p>
         </button>
       </article>
