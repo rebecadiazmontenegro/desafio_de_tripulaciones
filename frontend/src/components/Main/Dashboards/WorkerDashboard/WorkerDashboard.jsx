@@ -11,20 +11,20 @@ const WorkerDashboard = ({ userName }) => {
   };
 
   return (
-    <div>
-      <div>
+    <section>
+      <article>
         <h1>Bienvenido, {userName}</h1>
         <span>Worker</span>
-      </div>
-      <button onClick={() => navigate("/change-password")}>
+      </article>
+      <button onClick={() => navigate("/change/password")}>
         <h3>Cambiar Contraseña</h3>
       </button>
-      <div>
+      <article>
         <h2>Panel de Trabajador</h2>
         <p>Gestiona tus tareas y visualiza tu progreso</p>
-      </div>
+      </article>
 
-      <div>
+      <article>
         <button onClick={() => navigate("/chat")}>
           <div>✓</div>
           <h3>CHAT</h3>
@@ -36,12 +36,12 @@ const WorkerDashboard = ({ userName }) => {
           <h3>Mi Horario</h3>
           <p>Revisa tu horario de trabajo</p>
         </button>
-      </div>
+      </article>
 
       <button onClick={handleLogout}>
         Cerrar Sesión
       </button>
-    </div>
+    </section>
   );
 };
 

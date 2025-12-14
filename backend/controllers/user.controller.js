@@ -128,7 +128,7 @@ function logOut(req, res) {
 const getAllManagers = async (req, res) => {
   try {
     const managers = await usersModels.getAllManagersModel();
-    return res.status(200).json(managers); 
+    return res.status(200).json(managers);
   } catch (error) {
     console.error("Error en getAllManagers:", error);
     return res.status(500).json({ msg: error.message });
@@ -138,20 +138,21 @@ const getAllManagers = async (req, res) => {
 const getAllWorkers = async (req, res) => {
   try {
     const workers = await usersModels.getAllWorkersModel();
-    return res.status(200).json(workers); 
+    return res.status(200).json(workers);
   } catch (error) {
     console.error("Error en getAllWorkers:", error);
     return res.status(500).json({ msg: error.message });
   }
 };
 
-
 const deleteUser = async (req, res) => {
   try {
-    const emailToDelete = req.params.email; 
+    const emailToDelete = req.params.email;
 
     if (!emailToDelete) {
-      return res.status(400).json({ msg: "El email del usuario es obligatorio" });
+      return res
+        .status(400)
+        .json({ msg: "El email del usuario es obligatorio" });
     }
 
     const userToDelete = await usersModels.getUserModel(emailToDelete);
@@ -159,7 +160,7 @@ const deleteUser = async (req, res) => {
       return res.status(404).json({ msg: "Usuario no encontrado" });
     }
 
-    const requesterRole = req.user.rol; 
+    const requesterRole = req.user.rol;
     const targetRole = userToDelete.rol;
 
     if (
@@ -193,30 +194,25 @@ const changePassword = async (req, res) => {
 
   try {
     const { currentPassword, newPassword } = req.body;
-    const userId = req.user.id; // Obtenido del token JWT
+    const userId = req.user.id;
 
     if (!currentPassword || !newPassword) {
-      return res.status(400).json({ 
-        message: "Contraseña actual y nueva contraseña son requeridas" 
+      return res.status(400).json({
+        message: "Contraseña actual y nueva contraseña son requeridas",
       });
     }
-
-    // Obtener usuario
     const user = await usersModels.getUserByIdModel(userId);
     if (!user) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
 
-    // Verificar contraseña actual
     const isMatch = await bcrypt.compare(currentPassword, user.password);
     if (!isMatch) {
       return res.status(401).json({ message: "Contraseña actual incorrecta" });
     }
 
-    // Hash de la nueva contraseña
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    // Actualizar contraseña
     await usersModels.updatePasswordModel(userId, hashedPassword);
 
     return res.status(200).json({
@@ -239,5 +235,4 @@ module.exports = {
   getAllManagers,
   getAllWorkers,
   changePassword,
-
 };
