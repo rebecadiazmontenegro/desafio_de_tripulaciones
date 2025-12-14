@@ -25,6 +25,7 @@ const ManagerDashboard = ({ userName }) => {
         <h2>Panel de Manager</h2>
         <p>Gestiona tu equipo y supervisa proyectos</p>
       </article>
+
       <article className="cardButtons">
         <aside className="chatTeam">
           <button
@@ -48,10 +49,10 @@ const ManagerDashboard = ({ userName }) => {
             <h3>Crear Worker</h3>
             <p>Registra nuevos usuarios en el sistema</p>
           </button>
-        <button className="guideButton" onClick={() => navigate("/guide")}>
-          <Info size={28} />
-          <h3>Guía de uso</h3>
-        </button>
+          <button className="guideButton" onClick={() => navigate("/guide")}>
+            <Info size={28} />
+            <h3>Guía de uso</h3>
+          </button>
         </aside>
       </article>
       <article className="profileButtons">

@@ -1,0 +1,246 @@
+.workerDashboard {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  padding: 50px 0px;
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+
+  h1 {
+    font-size: 65px;
+    font-weight: var(--font-medium);
+    color: var(--white);
+    margin-bottom: 16px;
+  }
+
+  h2 {
+    font-size: 40px;
+    font-weight: var(--font-medium);
+    color: var(--white);
+    margin-top: 20px;
+    margin-bottom: 12px;
+  }
+
+  p {
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.85);
+    margin-top: 0px;
+  }
+
+  .infoPanel {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+    padding-bottom: 2px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.6);
+  }
+
+  .workerButtons {
+    display: flex;
+    flex-direction: column;
+
+    .chatButtons {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      margin-top: 30px;
+
+      .chatButton,
+      .guideButton {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        border-radius: 16px;
+        cursor: pointer;
+
+        background-color: rgba(255, 255, 255, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        box-shadow: 6px 6px 20px rgba(6, 18, 48, 0.4);
+
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+
+        transition: all 0.3s ease;
+        text-align: left;
+
+        svg {
+          color: var(--dark);
+        }
+
+        h3 {
+          font-size: 28px;
+          font-weight: var(--font-medium);
+          color: var(--dark);
+          margin-bottom: 8px;
+        }
+
+        p {
+          font-size: 18px;
+          color: rgba(6, 18, 48, 0.8);
+          margin-top: 0px;
+        }
+
+        &:hover {
+          transform: translateY(-6px);
+          background-color: rgba(255, 255, 255, 0.35);
+        }
+
+        &:active {
+          transform: translateY(0);
+        }
+      }
+
+    }
+
+    .profileButtons {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin-top: 24px;
+      gap: 8px;
+
+      .changePasswordButton,
+      .logOutButton {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        width: 300px;
+        gap: 8px;
+      }
+
+      .changePasswordButton {
+        font-size: 20px;
+        background: none;
+        border: none;
+        text-decoration: underline;
+        transition: all 0.3s ease;
+
+        &:hover {
+          transform: translateY(-6px);
+          background-color: rgba(6, 18, 48, 0.35);
+          padding: 2px 2px;
+          border-radius: 16px;
+        }
+      }
+
+      .logOutButton {
+        background-color: var(--dark);
+        color: var(--white);
+        padding: 8px 16px;
+        border-radius: 16px;
+        border: 2px solid var(--white);
+        box-shadow: 6px 6px 20px rgba(6, 18, 48, 0.4);
+        transition: all 0.3s ease;
+
+        &:hover {
+          transform: translateY(-6px);
+          background-color: rgba(6, 18, 48, 0.35);
+        }
+      }
+    }
+  }
+}
+
+@media (min-width: 819px) and (max-width: 1023px) {
+  .workerDashboard {
+    h1 {
+      font-size: 75px;
+    }
+    h2 {
+      font-size: 40px;
+    }
+    p {
+      font-size: 20px;
+    }
+
+    .workerButtons {
+      display: flex;
+      flex-direction: column;
+      align-items: center; // centramos todo
+      margin-top: 30px;
+      gap: 20px;
+
+      .chatButtons,
+      .profileButtons {
+        display: flex; 
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+
+        .chatButton {
+            width: 100%;
+        }
+
+        .guideButton {
+          width: 100%;
+          justify-content: center;
+          align-items: center;
+          margin-top: 0;
+        }
+      }
+    }
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1440px) {
+  .workerDashboard {
+    padding: 0 40px;
+
+    h1 {
+      font-size: 85px;
+    }
+    h2 {
+      font-size: 45px;
+    }
+    p {
+      font-size: 20px;
+    }
+
+    .workerButtons {
+      flex-direction: column;
+      justify-content: center;
+      justify-content: center;
+      gap: 20px;
+
+      .chatButtons,
+      .profileButtons {
+        flex-direction: row;
+        gap: 32px;
+
+        .chatButton,
+        .guideButton {
+          width: 100%;
+          h3 {
+            font-size: 26px;
+            font-weight: var(--font-medium);
+          }
+          p {
+            font-size: 18px;
+          }
+          svg {
+            width: 50px;
+            height: 50px;
+          }
+        }
+        .guideButton{
+            margin-top: 0;
+        }
+      }
+    }
+    .profileButtons {
+      flex-direction: row;
+      gap: 32px;
+      padding-top: 10px;
+      border-top: 2px solid rgba(255, 255, 255, 0.6);
+      button {
+        width: 280px;
+        font-size: 20px;
+      }
+    }
+  }
+}
