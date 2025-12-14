@@ -60,3 +60,64 @@ export const changePassword = async (currentPassword, newPassword) => {
     return { ok: false, data: { message: "Error en el servidor" } };
   }
 };
+
+
+export const getManagers = async (token) => {
+  try {
+    const response = await fetch(`${API_URL}/user/managers`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json();
+
+    return { ok: response.ok, data };
+  } catch (error) {
+    console.error("Error en getManagers:", error);
+    return {
+      ok: false,
+      data: { msg: "Error en el servidor" },
+    };
+  }
+};
+
+export const getWorkers = async (token) => {
+  try {
+    const response = await fetch(`${API_URL}/user/workers`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json();
+
+    return { ok: response.ok, data };
+  } catch (error) {
+    console.error("Error en getWorkers:", error);
+    return {
+      ok: false,
+      data: { msg: "Error en el servidor" },
+    };
+  }
+};
+
+export const deleteUser = async (email, token) => {
+  try {
+    const response = await fetch(`${API_URL}/user/${email}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json();
+    return { ok: response.ok, data };
+  } catch (error) {
+    console.error("Error en deleteUser:", error);
+    return { ok: false, data: { msg: "Error en el servidor" } };
+  }
+};
+

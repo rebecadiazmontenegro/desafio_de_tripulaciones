@@ -7,13 +7,13 @@ const queries = {
     `,
 
   getAllManagers: `
-  SELECT nombre, apellidos, departamento
+  SELECT nombre, apellidos, departamento, email
   FROM users
   WHERE rol = 'manager';
 `,
 
   getAllWorkers: `
-  SELECT nombre, apellidos
+  SELECT nombre, apellidos, email
   FROM users
   WHERE rol = 'worker';
 `,

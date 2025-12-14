@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { MessageCircle, Key, LogOut } from "lucide-react";
 
 const WorkerDashboard = ({ userName }) => {
   const navigate = useNavigate();
@@ -16,9 +17,6 @@ const WorkerDashboard = ({ userName }) => {
         <h1>Bienvenido, {userName}</h1>
         <span>Worker</span>
       </article>
-      <button onClick={() => navigate("/change/password")}>
-        <h3>Cambiar Contraseña</h3>
-      </button>
       <article>
         <h2>Panel de Trabajador</h2>
         <p>Gestiona tus tareas y visualiza tu progreso</p>
@@ -26,21 +24,21 @@ const WorkerDashboard = ({ userName }) => {
 
       <article>
         <button onClick={() => navigate("/chat")}>
-          <div>✓</div>
+          <MessageCircle size={28} />
           <h3>CHAT</h3>
           <p>Visualiza y completa tus tareas</p>
         </button>
-
-        <button onClick={() => navigate("/schedule")}>
-          <div>📅</div>
-          <h3>Mi Horario</h3>
-          <p>Revisa tu horario de trabajo</p>
-        </button>
       </article>
-
+      <article>
+      <button onClick={() => navigate("/change/password")}>
+        <Key size={24} />
+        <h3>Cambiar Contraseña</h3>
+      </button>
       <button onClick={handleLogout}>
+        <LogOut size={24} />
         Cerrar Sesión
       </button>
+      </article>
     </section>
   );
 };
