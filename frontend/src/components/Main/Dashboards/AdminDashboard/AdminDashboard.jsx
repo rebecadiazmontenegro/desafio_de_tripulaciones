@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { UserPlus, Users, BarChart2, MessageCircle, Key, LogOut } from "lucide-react";
 
 const AdminDashboard = ({ userName }) => {
   const navigate = useNavigate();
@@ -14,11 +15,8 @@ const AdminDashboard = ({ userName }) => {
     <section>
       <article>
         <h1>Bienvenido, {userName}</h1>
-        <span>Admin</span>
+        <p>Admin</p>
       </article>
-      <button onClick={() => navigate("/change/password")}>
-        <h3>Cambiar Contraseña</h3>
-      </button>
       <article>
         <h2>Panel de Administrador</h2>
         <p>Gestiona usuarios, visualiza estadísticas y configura el sistema</p>
@@ -26,27 +24,33 @@ const AdminDashboard = ({ userName }) => {
 
       <article>
         <button onClick={() => navigate("/signup")}>
-          <div>👥</div>
+           <UserPlus size={28} />
           <h3>Crear Manager</h3>
           <p>Registra nuevos usuarios en el sistema</p>
         </button>
 
-        <button onClick={() => navigate("/users")}>
-          <div>📊</div>
+        <button onClick={() => navigate("/users/list")}>
+          <Users size={28} />
           <h3>Ver Usuarios</h3>
           <p>Administra la lista de usuarios</p>
         </button>
 
         <button onClick={() => navigate("/chat")}>
-          <div>📋</div>
+          <MessageCircle size={28} />
           <h3>CHAT</h3>
           <p>Administra los proyectos activos</p>
         </button>
       </article>
-
+      <article>
+        <button onClick={() => navigate("/change/password")}>
+           <Key size={24} />
+          <h3>Cambiar Contraseña</h3>
+        </button>
       <button onClick={handleLogout}>
+        <LogOut size={24} />
         Cerrar Sesión
-      </button>
+        </button>
+      </article>
     </section>
   );
 };

@@ -5,15 +5,11 @@ import ManagerDashboard from "./ManagerDashboard";
 import WorkerDashboard from "./WorkerDashboard";
 
 const Dashboard = () => {
-    console.log("========== DASHBOARD SE ESTÁ EJECUTANDO =========="); // <-- AGREGA ESTO
-
   const navigate = useNavigate();
   const [userRole, setUserRole] = useState(null);
   const [userName, setUserName] = useState("");
 
   useEffect(() => {
-        console.log("========== USEEFFECT DEL DASHBOARD =========="); // <-- Y ESTO
-
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -24,10 +20,6 @@ const Dashboard = () => {
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
       const user = JSON.parse(localStorage.getItem("user"));
-
-            console.log("ROL DEL TOKEN:", payload.rol);        // <-- AGREGA ESTO
-      console.log("USUARIO COMPLETO:", user);            // <-- Y ESTO
-      console.log("TIPO DE ROL:", typeof payload.rol);   // <-- Y ESTO TAMBIÉN
       
       setUserRole(payload.rol);
       setUserName(user?.nombre || "Usuario");
@@ -39,9 +31,9 @@ const Dashboard = () => {
 
   if (!userRole) {
     return (
-      <div>
+      <section>
         <p>Cargando...</p>
-      </div>
+      </section>
     );
   }
 
@@ -54,12 +46,12 @@ const Dashboard = () => {
       return <WorkerDashboard userName={userName} />;
     default:
       return (
-        <div>
+        <section>
           <h2>Rol no reconocido</h2>
           <button onClick={() => navigate("/login")}>
             Volver al login
           </button>
-        </div>
+        </section>
       );
   }
 };
