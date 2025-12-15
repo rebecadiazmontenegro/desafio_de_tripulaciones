@@ -14,7 +14,7 @@ const Main = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/change/password" element={<ChangePassword />} />
+        <Route path="/change-password" element={<ChangePassword />} />
         <Route path="/users/list" element={<UsersList />} />
       </Routes>
     </main>;
