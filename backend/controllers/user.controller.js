@@ -11,32 +11,88 @@ const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
     console.log("Email que llega al Login:", email);
+    
     if (!email || !password) {
       return res.status(400).json({ message: "Email y contraseña requeridos" });
     }
+    
     const user = await usersModels.getUserModel(email);
     if (!user) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
+
+    // =========================================================================
+    // 1. NUEVA LÓGICA: Verificar si la cuenta está bloqueada ANTES de validar password
+    // =========================================================================
+    if (user.bloqueado_hasta) {
+      const now = new Date();
+      const lockDate = new Date(user.bloqueado_hasta);
+
+      if (now < lockDate) {
+        const diffMs = lockDate - now;
+        const diffMins = Math.ceil(diffMs / 60000);
+        return res.status(429).json({ 
+          message: `Cuenta bloqueada temporalmente. Inténtalo de nuevo en ${diffMins} minutos.` 
+        });
+      }
+    }
+    // =========================================================================
+
     const isMatch = await bcrypt.compare(password, user.password);
+    
     if (!isMatch) {
-      return res.status(401).json({ message: "Contraseña incorrecta" });
+      // =======================================================================
+      // 2. NUEVA LÓGICA: Contraseña incorrecta -> Sumar intentos y bloquear
+      // =======================================================================
+      const currentAttempts = (user.intentos_fallidos || 0) + 1;
+      let lockUntil = null;
+      let errorMsg = "Contraseña incorrecta";
+
+      // Si llega a 5 intentos, bloqueamos
+      if (currentAttempts >= 5) {
+        const blockMinutes = 5; // Tiempo de bloqueo
+        lockUntil = new Date(Date.now() + blockMinutes * 60000); 
+        errorMsg = `Has excedido el límite de intentos. Cuenta bloqueada por ${blockMinutes} minutos.`;
+      }
+
+      // Guardamos el fallo en BD
+      if(usersModels.updateLoginAttemptsModel) {
+          await usersModels.updateLoginAttemptsModel(user.id, currentAttempts, lockUntil);
+      }
+
+      return res.status(401).json({ 
+        message: errorMsg,
+        intentos_restantes: Math.max(0, 5 - currentAttempts)
+      });
+      // =======================================================================
     }
 
-    // ¿Está el semáforo rojo activado?
+    // =========================================================================
+    // 3. NUEVA LÓGICA: Login Exitoso -> Resetear contadores a 0
+    // =========================================================================
+    // Si la contraseña es correcta, limpiamos los fallos anteriores
+    if(usersModels.updateLoginAttemptsModel) {
+        await usersModels.updateLoginAttemptsModel(user.id, 0, null);
+    }
+    // =========================================================================
+
+
+    // --- A PARTIR DE AQUÍ ES EL CÓDIGO DE TUS COMPAÑEROS (INTACTO) ---
+    
+    // ¿Está el semáforo rojo activado? (Reset Password / Force Change)
     if(user.reset_password) {
 
       const nowDate = new Date();
       const expirationDate = new Date(user.reset_password_expires);
 
-      // Comprobamos si ha caducado el tiempo de la contraseña
+      // Comprobamos si ha caducado el tiempo de la contraseña temporal
       if(nowDate > expirationDate) {
-
         // Si la contraseña ha caducado:
         return res.status(403).json({
           message: "Su contraseña temporal ha caducado. Pide una nueva.",
         });
       }
+      
       // No generamos token hasta cambiar contraseña
       return res.status(200).json({
         message: "Login correcto, pero cambia la contraseña ahora.",
@@ -50,9 +106,10 @@ const loginUser = async (req, res) => {
           departamento: user.departamento
         },
       });
-  }
+    }
 
-     const token = jwt.sign(
+    // Generación normal del Token (si no hay reset_password pendiente)
+    const token = jwt.sign(
       { 
         id: user.id,            
         email: user.email, 
@@ -76,6 +133,7 @@ const loginUser = async (req, res) => {
         departamento: user.departamento
       },
     });
+
   } catch (error) {
     console.error("Error en login:", error);
     res.status(500).json({
