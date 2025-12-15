@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import ChartRenderer from "./ChartRenderer/ChartRenderer";
 import { sendChatQuery } from "../../../service/chat.service";
+import DescargarCSV from "./DescargarCSV/DescargarCSV";
 
 const Chat = () => {
   const [messages, setMessages] = useState([]);
@@ -91,6 +92,7 @@ const Chat = () => {
 
             {/* Render de datos en tabla */}
             {msg.sender === "bot" && msg.payload?.type === "data" && (
+              <>
               <table className="data-table">
                 <thead>
                   <tr>
@@ -137,6 +139,13 @@ const Chat = () => {
                   ))}
                 </tbody>
               </table>
+              <DescargarCSV 
+                  data={msg.payload.data.rows} 
+                  columns={msg.payload.data.columns} 
+                  fileName="informe_datos.csv"
+                />
+
+              </>
             )}
           </div>
         ))}
