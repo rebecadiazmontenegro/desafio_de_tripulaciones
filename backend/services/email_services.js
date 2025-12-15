@@ -10,7 +10,7 @@ apiKey.apiKey = process.env.BREVO_API_KEY;
 const changePassword = async (email, username, defaultPassword) => {
     const SendSmtpEmail = new Brevo.SendSmtpEmail();
 
-    const urlFrontend = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const urlFrontend = process.env.FRONTEND_EMAIL || 'http://localhost:5173';
 
     // Email
     SendSmtpEmail.subject = "Bienvenid@ a la Empresa!";
@@ -21,7 +21,7 @@ const changePassword = async (email, username, defaultPassword) => {
         ` <h1>Hola ${username},</h1>
             <p>Su cuenta ha sido creada exitosamente por tu manager.</p>
             <p>Su contraseña temporal es: <strong>${defaultPassword}</strong></p>
-            <p>Está contraseña tiene una duración de <strong>30 minutos</strong>. Por favor, entra y cámbiala inmediatamente.</p>
+            <p>Está contraseña tiene una duración de <strong>15 minutos</strong>. Por favor, entra y cámbiala inmediatamente.</p>
             <a href=${urlFrontend}>Ir a Iniciar Sesión</a>`;
     
     try {

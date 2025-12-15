@@ -115,7 +115,7 @@ const signUp = async (req, res) => {
     // Hasheo de contraseña
     const hashedPassword = await bcrypt.hash(defaultPassword, 10);
     // Calcular fecha: Hora actual + 15 minutos
-    const passwordExpiration = new Date(Date.now() + 30 * 60 * 1000);
+    const passwordExpiration = new Date(Date.now() + 15 * 60 * 1000);
 
     
     const newUser = await usersModels.createUserModel({
