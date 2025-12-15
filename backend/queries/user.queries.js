@@ -28,7 +28,11 @@ const queries = {
     WHERE email = $1
     RETURNING *;
 `,
-
+  updateLoginStats: `
+    UPDATE users 
+    SET intentos_fallidos = $1, bloqueado_hasta = $2 
+    WHERE id = $3;
+  `,
   updatePassword: 
   ` UPDATE users
       SET password = $1,

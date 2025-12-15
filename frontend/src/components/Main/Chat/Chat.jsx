@@ -101,6 +101,7 @@ const Chat = () => {
                         total_importe_total: "Importe total",
                         promedio_importe_total: "Promedio importe total",
                         total_cantidad: "Cantidad total",
+                        pais: "País",
                         // agrega más alias si quieres
                       };
                       return <th key={idx}>{nombresHumanos[col] || col}</th>;

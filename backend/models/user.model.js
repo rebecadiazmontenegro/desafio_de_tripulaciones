@@ -129,6 +129,20 @@ const updatePasswordModel = async (email, newPasswordHash) => {
   }
 }
 
+const updateLoginAttemptsModel = async (userId, attempts, lockUntil) => {
+  let client;
+  try {
+    client = await pool.connect();
+    // Aquí usamos la variable queries.updateLoginStats, NO escribimos el string
+    await client.query(queries.updateLoginStats, [attempts, lockUntil, userId]);
+  } catch (err) {
+    console.error("Error en updateLoginAttemptsModel:", err);
+    throw err;
+  } finally {
+    if (client) client.release();
+  }
+};
+
 
 module.exports = {
   createUserModel,
@@ -138,4 +152,5 @@ module.exports = {
   deleteUserByEmail,
   getUserByIdModel,
   updatePasswordModel,
+  updateLoginAttemptsModel
 };
