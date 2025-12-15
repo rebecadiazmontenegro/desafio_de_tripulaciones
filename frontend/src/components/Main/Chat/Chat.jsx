@@ -76,7 +76,7 @@ const Chat = () => {
 
   return (
     <section className="chatArea">
-      <article className="messages-window">
+      <article className="messagesWindow">
         {messages.map((msg, index) => (
           <div key={index} className={`message-item ${msg.sender}`}>
             <strong>{msg.sender === "user" ? "Tú:" : "Bot:"}</strong>
@@ -91,7 +91,7 @@ const Chat = () => {
 
             {/* Render de datos en tabla */}
             {msg.sender === "bot" && msg.payload?.type === "data" && (
-              <table className="data-table">
+              <table className="dataTable">
                 <thead>
                   <tr>
                     {msg.payload.data.columns.map((col, idx) => {
