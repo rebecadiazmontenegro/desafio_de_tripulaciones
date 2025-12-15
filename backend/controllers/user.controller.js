@@ -1,5 +1,5 @@
 const usersModels = require("../models/user.model");
-const { changePassword } = require("../services/email.services");
+const { changePassword } = require("../services/email_services");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const crypto = require('crypto');
@@ -10,6 +10,7 @@ const { validationResult } = require("express-validator");
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log("Email que llega al Login:", email);
     if (!email || !password) {
       return res.status(400).json({ message: "Email y contraseña requeridos" });
     }
@@ -117,7 +118,7 @@ const signUp = async (req, res) => {
     const passwordExpiration = new Date(Date.now() + 30 * 60 * 1000);
 
     
-    const newUser = await usersModels.createUser({
+    const newUser = await usersModels.createUserModel({
       nombre,
       apellidos,
       email,          
@@ -279,15 +280,21 @@ const updatePassword = async (req,res) => {
 
     // Vemos si la contraseña temporal coincide con la que está guardada
     const verifyPassword = await bcrypt.compare(defaultPassword, user.password);
+    console.log("3. Contraseña coincide:", verifyPassword);
     if(!verifyPassword) {
-      return res.status(400).json({ message: "La contraseña aleatorio es incorrecta." });
+      return res.status(400).json({ message: "La contraseña aleatoria es incorrecta." });
     }
 
     // Hasheamos la Nueva Contraseña
     const newPasswordHash = await bcrypt.hash(newPassword, 10);
 
+
     // Guardamos en la BBDD
     await usersModels.updatePasswordModel(email, newPasswordHash);
+
+    // if(!userUpdate) {
+    //   return res.status(404).json({ message: "No se encontró el usuario. Verifica el email."});
+    // }
     res.status(200).json({ message: "Contraseña actualiza! Inicia Sesión." });
 
   } catch (error) {
