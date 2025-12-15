@@ -62,6 +62,7 @@ const ChangePassword = () => {
       }
     } catch (err) {
       setError("Error inesperado. Intenta de nuevo.");
+      console.log(err);
     } finally {
       setLoading(false);
     }

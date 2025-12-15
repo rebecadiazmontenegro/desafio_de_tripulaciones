@@ -1,111 +1,145 @@
-
-// Colores:
-$color-bg-window: #fefefe;    // Fondo blanco suave de la ventana
-$color-bg-page: #f5f7f9;     // Fondo muy ligero fuera de la ventana
-$color-primary: #1e70e3;     // Azul de acción (Botones)
-$color-user-bubble: #e1ecff; // Azul muy claro para burbujas de usuario
-$color-bot-bubble: #f1f3f6;  // Gris muy claro para burbujas del bot
-$color-text-dark: #333333;
-
-.chat-area {
+.chatArea {
   display: flex;
   flex-direction: column;
-  height: 100%; 
-  width: 100%;
   max-width: 900px;
-  margin: 20px auto; // Le damos margen superior e inferior para que "flote"
-  background-color: $color-bg-window;
-  border-radius: 16px; // Esquinas muy suaves
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.03); // Sombra que simula flotar
-  font-family: 'Inter', 'Segoe UI', sans-serif;
-  overflow: hidden; // Asegura que el contenido respeta el border-radius
+  margin: 40px auto;
+  background-color: var(--color-bg-window);
+  border-radius: 24px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  overflow: hidden;
+  z-index: 2;
+  animation: fadeIn 0.5s ease-in;
 }
 
-// 2. VENTANA DE MENSAJES
-.messages-window {
+.messagesWindow {
   flex-grow: 1;
-  padding: 25px;
+  padding: 30px;
   overflow-y: auto;
-  // Sin borde inferior, el diseño se integra con el input
   display: flex;
-  flex-direction: column; // Para apilar las burbujas
+  flex-direction: column;
+  gap: 18px;
 }
 
 .message-item {
   display: flex;
   flex-direction: column;
-  margin-bottom: 20px;
-  max-width: 75%; // Más estrecho, más legible
-  padding: 12px 18px;
-  border-radius: 18px; 
+  max-width: 70%;
+  padding: 16px 22px;
+  border-radius: 20px;
   line-height: 1.6;
   font-size: 0.95em;
-  color: $color-text-dark;
-  
+  color: var(--color-text-dark);
+  animation: slideIn 0.5s ease forwards;
+
   strong {
-    font-weight: 700;
+    font-weight: var(--font-medium);
     margin-bottom: 4px;
     font-size: 0.85em;
-    opacity: 0.7; // El remitente es menos prominente
+    opacity: 0.7;
   }
 }
 
-// Estilos específicos para BOT (Izquierda)
 .message-item.bot {
   align-self: flex-start;
-  background-color: $color-bot-bubble; // Gris claro
-  border-top-left-radius: 4px; // Esquina ajustada para un diseño moderno
+  background-color: var(--color-bot-bubble);
+  border-top-left-radius: 6px;
 }
 
-// Estilos específicos para USUARIO (Derecha)
 .message-item.user {
   align-self: flex-end;
-  background-color: $color-user-bubble; // Azul claro
-  border-top-right-radius: 4px; // Esquina ajustada
+  background-color: var(--color-user-bubble);
+  border-top-right-radius: 6px;
 }
 
-// 3. ÁREA DE INPUT Y BOTÓN
 .input-area {
   display: flex;
-  padding: 15px 25px;
-  gap: 15px;
-  background-color: #fcfcfc; // Fondo ligeramente más oscuro que el chat
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 20px 30px;
+  gap: 16px;
+  background-color: rgba(255, 255, 255, 0.6);
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .input-area input[type="text"] {
-  flex-grow: 1; 
+  flex-grow: 1;
   padding: 14px 22px;
-  border: 1px solid #dcdcdc;
-  border-radius: 30px; // Muy redondeado
+  border-radius: 30px;
+  border: 1px solid rgba(6, 18, 48, 0.2);
   font-size: 1em;
-  transition: border-color 0.3s;
+  transition: all 0.3s ease;
 
   &:focus {
     outline: none;
-    border-color: #1e70e3; // $color-primary
-    box-shadow: 0 0 0 3px rgba(30, 112, 227, 0.1); // Sombra azul suave
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(66, 105, 210, 0.2);
   }
 }
 
 .input-area button {
-  background-color: #1e70e3; // $color-primary
+  background-color: var(--color-primary);
   color: white;
   border: none;
   border-radius: 30px;
-  padding: 12px 25px;
-  font-weight: 600;
+  padding: 12px 28px;
+  font-weight: var(--font-medium);
   cursor: pointer;
-  transition: background-color 0.3s;
-  min-width: 90px;
-  
-  // Hover sin usar darken() para evitar warnings:
+  min-width: 100px;
+  transition: all 0.3s ease;
+
   &:hover:not(:disabled) {
-    background-color: #185abf; // Valor fijo ligeramente más oscuro
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 6px 20px rgba(6, 18, 48, 0.3);
   }
 
   &:disabled {
-    background-color: #cccccc;
+    background-color: rgba(100, 100, 100, 0.4);
     cursor: not-allowed;
+  }
+}
+
+.dataTable{
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+  font-size: 14px;
+}
+
+.dataTable th,
+.dataTabletd {
+  border: 1px solid rgba(6, 18, 48, 0.2);
+  padding: 10px;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.dataTable th {
+  font-weight: var(--font-medium);
+}
+
+.dataTable tr:nth-child(even) {
+  background-color: rgba(66, 105, 210, 0.05);
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
   }
 }
