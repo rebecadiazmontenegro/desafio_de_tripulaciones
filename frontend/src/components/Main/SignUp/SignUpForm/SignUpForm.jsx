@@ -1,12 +1,14 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { signUp } from "../../../../service/users.service";
 
+
 const SignUpAdminForm = () => {
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     nombre: "",
     apellidos: "",
     email: "",
-    password: "",
     departamento: "",
   });
 
@@ -32,7 +34,9 @@ const SignUpAdminForm = () => {
     }
 
     setMessage(`${data.msg}`);
-    alert(`Usuario creado correctamente: ${form.nombre} ${form.apellidos}`);
+    alert(`Usuario creado correctamente: ${form.nombre} ${form.apellidos}. Se ha enviado la contraseña a ${form.email}`);
+
+    navigate("/dashboard")
   };
 
   return (
@@ -67,15 +71,6 @@ const SignUpAdminForm = () => {
           required
         />
 
-        <label>Contraseña:</label>
-        <input
-          type="password"
-          name="password"
-          value={form.password}
-          onChange={handleChange}
-          required
-        />
-
         <label>Selecciona un departamento:</label>
         <select
           name="departamento"
@@ -83,6 +78,7 @@ const SignUpAdminForm = () => {
           onChange={handleChange}
           required
         >
+          <option value="" disabled>Selecciona el Departamento</option>
           <option value="relojes">Relojes inteligentes</option>
           <option value="portatiles">Portátiles</option>
           <option value="moviles">Móviles</option>

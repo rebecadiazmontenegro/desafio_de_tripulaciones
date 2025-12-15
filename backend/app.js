@@ -9,7 +9,21 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        connectSrc: ["'self'", "https://proyecto-chat-bot-grupo-2.onrender.com"],
+        imgSrc: ["'self'", "data:"],
+        fontSrc: ["'self'", "https:"],
+      },
+    },
+  })
+);
+
 
 app.use(
   cors({

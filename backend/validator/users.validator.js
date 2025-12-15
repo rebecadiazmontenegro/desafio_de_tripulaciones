@@ -13,8 +13,7 @@ const validateCreateUser = [
 
   body("email")
     .exists().withMessage("El email es obligatorio")
-    .isEmail().withMessage("Debe ser un email válido")
-    .normalizeEmail(),
+    .isEmail().withMessage("Debe ser un email válido"),
 
   body("password")
     .exists().withMessage("La contraseña es obligatoria")
@@ -37,8 +36,7 @@ const validateLoginUser = [
 
   body("email")
     .exists().withMessage("El email es obligatorio")
-    .isEmail().withMessage("Debe ser un email válido")
-    .normalizeEmail(),
+    .isEmail().withMessage("Debe ser un email válido"),
 
   body("password")
     .exists().withMessage("La contraseña es obligatoria")

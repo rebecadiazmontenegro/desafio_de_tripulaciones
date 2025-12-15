@@ -1,9 +1,12 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { changePassword } from "../../../service/users.service";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
 
 const ChangePassword = () => {
   const navigate = useNavigate();
+  const location = useLocation(); // Leemos lo que nos manda el login
+  const emailFromLogin = location.state?.email;
+
   const [formData, setFormData] = useState({
     currentPassword: "",
     newPassword: "",
@@ -12,6 +15,13 @@ const ChangePassword = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Si no hay email, LLevamos a login
+  useEffect(() => {
+    if(!emailFromLogin) {
+      navigate("/login");
+    }
+  }, [ emailFromLogin, navigate]);
 
   const handleChange = (e) => {
     setFormData({
@@ -47,21 +57,34 @@ const ChangePassword = () => {
     }
 
     try {
-      const { ok, data } = await changePassword(
-        formData.currentPassword,
-        formData.newPassword
-      );
+      const urlChangePassword = `${import.meta.env.VITE_API_URL}/user/change-password`;
+      const response = await axios.put(urlChangePassword, {
+        email: emailFromLogin,
+        defaultPassword: formData.currentPassword,
+        newPassword: formData.newPassword
+      })
 
-      if (ok) {
-        setSuccess(data.message);
-        setTimeout(() => {
-          navigate("/dashboard");
-        }, 2000);
-      } else {
-        setError(data.message || "Error al cambiar la contraseña");
-      }
+      // const { ok, data } = await changePassword(
+      //   formData.currentPassword,
+      //   formData.newPassword
+      // );
+
+      // if (response.ok) {
+      //   setSuccess(response.data.message);
+      //   setTimeout(() => {
+      //     navigate("/login");
+      //   }, 2000);
+      // } else {
+      //   setError(response.data.message || "Error al cambiar la contraseña");
+      // }
+      setSuccess(response.data.message);
+
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
     } catch (err) {
       setError("Error inesperado. Intenta de nuevo.");
+      console.log(err);
     } finally {
       setLoading(false);
     }
@@ -130,7 +153,7 @@ const ChangePassword = () => {
           {loading ? "Cambiando..." : "Cambiar Contraseña"}
         </button>
 
-        <button onClick={() => navigate("/dashboard")} disabled={loading}>
+        <button onClick={() => navigate("/login")} disabled={loading}>
           Cancelar
         </button>
       </article>
