@@ -1,123 +1,164 @@
-import React, { useState, useEffect, useRef } from 'react';
-
-// URL del Backend (Ajustar a la configuración de Persona A)
-const API_URL = 'http://localhost:4000/api/chat';
+import React, { useState, useEffect, useRef } from "react";
+import ChartRenderer from "./ChartRenderer/ChartRenderer";
+import { sendChatQuery } from "../../../service/chat.service";
 
 const Chat = () => {
-    // 1. ESTADOS
-    const [messages, setMessages] = useState([]); // Array que guarda toda la conversación
-    const [input, setInput] = useState('');      // Lo que escribe el usuario
-    const [loading, setLoading] = useState(false); // Para deshabilitar el input mientras espera
-    const [userContext, setUserContext] = useState({}); // Rol y departamento
-    
-    // Ref para que la ventana haga scroll automático al final
-    const messagesEndRef = useRef(null); 
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [userContext, setUserContext] = useState({});
+  const messagesEndRef = useRef(null);
 
-    // 2. RECUPERAR CONTEXTO DEL USUARIO
-    useEffect(() => {
-        // Lee los datos guardados por el componente Login
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-            setUserContext(JSON.parse(storedUser));
-        }
-        
-        // Cargar un mensaje de bienvenida al inicio
-        setMessages([{ 
-            sender: 'bot', 
-            text: `Hola, ${JSON.parse(storedUser)?.nombre}. Soy el Chatbot interno. ¿En qué puedo ayudarte con los datos de ${JSON.parse(storedUser)?.departamento.toUpperCase()}?` 
-        }]);
-    }, []);
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    const user = storedUser ? JSON.parse(storedUser) : {};
+    setUserContext(user);
 
-    // 3. EFECTO DE SCROLL
-    // Se ejecuta cada vez que 'messages' cambia
-    useEffect(() => {
-        // Mueve el scroll al último mensaje
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages]);
+    const departamentoText = user.departamento
+      ? ` con los datos de ${user.departamento.toUpperCase()}`
+      : "";
 
-    
-    // 4. FUNCIÓN PARA ENVIAR EL MENSAJE Y HACER LA LLAMADA API
-    const handleSend = async (e) => {
-        e.preventDefault();
-        if (input.trim() === '' || loading) return;
+    setMessages([
+      {
+        sender: "bot",
+        text: `Hola, ${
+          user.nombre ?? "Usuario"
+        }. Soy el Chatbot interno. ¿En qué puedo ayudarte${departamentoText}?`,
+      },
+    ]);
+  }, []);
 
-        const userMessage = input.trim();
-        setInput('');
-        setLoading(true);
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
-        // A. Agregar el mensaje del usuario al historial
-        const newMessage = { sender: 'user', text: userMessage };
-        setMessages(prev => [...prev, newMessage]);
+  const handleSend = async (e) => {
+    e.preventDefault();
+    if (input.trim() === "" || loading) return;
 
-        // Estructura de la petición al Backend (La clave)
-        const token = localStorage.getItem('token');
-        const context = userContext.departamento; // Enviamos el departamento como filtro
+    const userMessage = input.trim();
+    setInput("");
+    setLoading(true);
 
-        try {
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`, // Envía el token de seguridad
-                    'X-User-Context': context // Envía el departamento como cabecera (HEADER)
-                },
-                body: JSON.stringify({ 
-                    query: userMessage,
-                    user_id: userContext.id,
-                    department: context
-                }),
-            });
+    setMessages((prev) => [...prev, { sender: "user", text: userMessage }]);
 
-            if (!response.ok) {
-                throw new Error('El servidor devolvió un error.');
-            }
+    try {
+      const data = await sendChatQuery(userMessage);
 
-            const data = await response.json();
-            
-            // C. Agregar la respuesta del bot al historial (si vamos bien de tiempo)
-            const botResponse = { sender: 'bot', text: data.response || 'No tengo respuesta para eso.' };
-            setMessages(prev => [...prev, botResponse]);
+      let botText = "";
+      if (data.type === "data") {
+        botText = `He encontrado ${data.data.rows.length} resultados.`;
+      } else if (data.type === "chart") {
+        botText = `He generado un gráfico de tipo ${data.chart_type}.`;
+      } else {
+        botText = "No he podido interpretar la respuesta.";
+      }
 
-        } catch (error) {
-            console.error("Error al obtener respuesta del bot:", error);
-            setMessages(prev => [...prev, { sender: 'bot', text: 'Lo siento, ha ocurrido un error de conexión.' }]);
-        } finally {
-            setLoading(false);
-        }
-    };
+      setMessages((prev) => [
+        ...prev,
+        {
+          sender: "bot",
+          text: botText,
+          payload: data,
+        },
+      ]);
+    } catch (error) {
+      console.error(error);
+      setMessages((prev) => [
+        ...prev,
+        { sender: "bot", text: "Error al conectar con el servidor." },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
-    // RENDERIZADO DEL CHAT
-    return (
-        <div className="chat-area">
-            
-            {/* VENTANA DE MENSAJES (El historial) */}
-            <div className="messages-window">
-                {messages.map((msg, index) => (
-                    // Usamos una lista simple P/R como pediste
-                    <div key={index} className={`message-item ${msg.sender}`}>
-                        <strong>{msg.sender === 'user' ? 'Tú:' : 'Bot:'}</strong>
-                        <span> {msg.text}</span>
-                    </div>
-                ))}
-                <div ref={messagesEndRef} /> {/* El ancla para el scroll */}
-            </div>
+  return (
+    <div className="chat-area">
+      <div className="messages-window">
+        {messages.map((msg, index) => (
+          <div key={index} className={`message-item ${msg.sender}`}>
+            <strong>{msg.sender === "user" ? "Tú:" : "Bot:"}</strong>
+            <span> {msg.text}</span>
 
-            {/*  FORMULARIO DE INPUT */}
-            <form className="input-area" onSubmit={handleSend}>
-                <input
-                    type="text"
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    placeholder={loading ? "Esperando respuesta..." : "Escribe tu pregunta..."}
-                    disabled={loading}
-                />
-                <button type="submit" disabled={loading}>
-                    {loading ? '...' : 'Enviar'}
-                </button>
-            </form>
-        </div>
-    );
+            {/* Render de gráficos */}
+            {msg.sender === "bot" && msg.payload?.type === "chart" && (
+              <div className="chart-container">
+                <ChartRenderer payload={msg.payload} />
+              </div>
+            )}
+
+            {/* Render de datos en tabla */}
+            {msg.sender === "bot" && msg.payload?.type === "data" && (
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    {msg.payload.data.columns.map((col, idx) => {
+                      const nombresHumanos = {
+                        date_trunc: "Fecha",
+                        max_importe_total: "Importe total máximo",
+                        total_importe_total: "Importe total",
+                        promedio_importe_total: "Promedio importe total",
+                        total_cantidad: "Cantidad total",
+                        // agrega más alias si quieres
+                      };
+                      return <th key={idx}>{nombresHumanos[col] || col}</th>;
+                    })}
+                  </tr>
+                </thead>
+                <tbody>
+                  {msg.payload.data.rows.map((row, rIdx) => (
+                    <tr key={rIdx}>
+                      {row.map((cell, cIdx) => {
+                        const colName = msg.payload.data.columns[cIdx];
+
+                        if (colName === "date_trunc") {
+                          const fecha = new Date(cell);
+                          return (
+                            <td key={cIdx}>
+                              {`${fecha
+                                .getDate()
+                                .toString()
+                                .padStart(2, "0")}/${(fecha.getMonth() + 1)
+                                .toString()
+                                .padStart(2, "0")}/${fecha.getFullYear()}`}
+                            </td>
+                          );
+                        }
+
+                        if (typeof cell === "number") {
+                          return <td key={cIdx}>{cell.toFixed(2)}</td>;
+                        }
+
+                        return <td key={cIdx}>{cell}</td>;
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        ))}
+        <div ref={messagesEndRef} />
+      </div>
+
+      <form className="input-area" onSubmit={handleSend}>
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder={
+            loading ? "Esperando respuesta..." : "Escribe tu pregunta..."
+          }
+          disabled={loading}
+        />
+        <button type="submit" disabled={loading}>
+          {loading ? "..." : "Enviar"}
+        </button>
+      </form>
+    </div>
+  );
 };
 
 export default Chat;
