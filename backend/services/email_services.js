@@ -10,7 +10,7 @@ apiKey.apiKey = process.env.BREVO_API_KEY;
 const changePassword = async (email, username, defaultPassword) => {
     const SendSmtpEmail = new Brevo.SendSmtpEmail();
 
-    const urlFrontend = process.env.FRONTEND_EMAIL || 'http://localhost:5173';
+    const urlFrontend = process.env.FRONTEND_EMAIL || process.env.FRONTEND_URL;
 
     // Email
     SendSmtpEmail.subject = "Bienvenid@ a la Empresa!";
