@@ -42,4 +42,7 @@ router.get(
 
 router.delete("/:email", authMiddleware, usersController.deleteUser);
 
+router.put("/change-password", usersController.updatePassword);
+
+
 module.exports = router;
