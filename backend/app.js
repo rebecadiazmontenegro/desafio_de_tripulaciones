@@ -37,6 +37,9 @@ app.use(express.static(path.join(__dirname, "public")));
 const usersRoutes = require("./routes/user.routes");
 app.use("/user", usersRoutes);
 
+const chatRoutes = require("./routes/chat.routes");
+app.use("/", chatRoutes);
+
 const frontendPath = path.join(__dirname, "../frontend/dist");
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(frontendPath));
