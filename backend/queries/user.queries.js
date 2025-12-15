@@ -28,6 +28,13 @@ const queries = {
     WHERE email = $1
     RETURNING *;
 `,
+
+  updatePassword: 
+  ` UPDATE users
+      SET password = $1,
+          reset_password = FALSE,
+          reset_password_expires = NULL
+      WHERE email = $2;`,
 };
 
 module.exports = queries;
