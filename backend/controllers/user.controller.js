@@ -62,7 +62,6 @@ const loginUser = async (req, res) => {
     }
 
     
-    // Login Exitoso -> Resetear contadores a 0
     // Si la contraseña es correcta, limpiamos los fallos anteriores
     if(usersModels.updateLoginAttemptsModel) {
         await usersModels.updateLoginAttemptsModel(user.id, 0, null);
