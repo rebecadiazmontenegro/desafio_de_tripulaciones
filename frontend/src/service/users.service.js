@@ -42,7 +42,7 @@ export const changePassword = async (currentPassword, newPassword) => {
   const token = localStorage.getItem("token");
   
   try {
-    const response = await fetch(`${API_URL}/user/change/password`, {
+    const response = await fetch(`${API_URL}/user/word`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

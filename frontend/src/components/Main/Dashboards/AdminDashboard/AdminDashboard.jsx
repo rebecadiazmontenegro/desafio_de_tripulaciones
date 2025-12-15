@@ -47,7 +47,7 @@ const AdminDashboard = ({ userName }) => {
       <article className="profileButtons">
         <button 
           className="changePasswordButton"
-          onClick={() => navigate("/change/password")}
+          onClick={() => navigate("/change-password")}
         >
           <Key size={20} />
           <h4>Cambiar Contraseña</h4>

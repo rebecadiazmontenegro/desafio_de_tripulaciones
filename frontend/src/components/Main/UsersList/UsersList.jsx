@@ -58,8 +58,9 @@ const UsersList = () => {
   if (error) return <p>{error}</p>;
 
   return (
-    <section>
-      <h2>{user.rol === "admin" ? "Managers" : "Workers"}</h2>
+    <section className="allUsersList">
+      <h1>{user.rol === "admin" ? "Managers" : "Workers"}</h1>
+      <p>Gestiona los managers de cada departamento</p>
       <article className="allUsers">
         {users.map((u) => (
           <UserCard
