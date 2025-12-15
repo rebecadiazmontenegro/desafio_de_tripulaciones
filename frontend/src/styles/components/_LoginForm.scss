@@ -1,105 +1,193 @@
-// Primary Color: #2563eb (Azul brillante)
-// Background Color: #f3f4f6 (Gris muy claro)
-// Text Color: #1f2937 (Gris oscuro)
-// Error Color: #ef4444 (Rojo)
-// White: #ffffff
-
-// 1. CONTENEDOR PRINCIPAL (Centra todo en la pantalla)
-.login-container {
+.loginContainer {
+  min-height: 80vh;
   display: flex;
+  width: 90%;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  background-color: #f3f4f6; 
-  font-family: 'Segoe UI', sans-serif;
-  padding: 20px;
-}
+  padding: 32px 20px;
+  position: relative;
+  z-index: 1;
+  height: 100px;
 
-// 2. CABECERA (Texto encima del form)
-.login-header {
-  text-align: center;
-  margin-bottom: 2rem;
+  animation: fadeIn 0.6s ease-in;
 
-  h1 {
-    color: #2563eb; 
-    margin-bottom: 0.5rem;
-    font-size: 2rem;
-  }
-  p {
-    color: #7d8591; 
-  }
-}
+  .loginHeader {
+    text-align: center;
+    margin-bottom: 32px;
 
-// 3. FORMULARIO (La tarjeta blanca)
-.login-form {
-  background: #ffffff;
-  padding: 2.5rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.06);
-  width: 100%;
-  max-width: 400px; 
-  display: flex;
-  flex-direction: column;
+    h1 {
+      font-size: 50px;
+      font-weight: var(--font-medium);
+      color: var(--white);
+      margin-bottom: 8px;
+    }
 
-  label {
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: #1f2937; 
-    font-size: 0.9rem;
+    p {
+      font-size: 18px;
+      color: rgba(255, 255, 255, 0.85);
+      margin: 0;
+    }
   }
 
-  input {
-    padding: 0.75rem;
-    margin-bottom: 1.2rem;
-    border: 1px solid #e5e7eb;
-    border-radius: 6px;
-    font-size: 1rem;
-    
-    &:focus {
+  .loginForm {
+    width: 100%;
+    max-width: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 28px;
+
+    background-color: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 20px;
+    box-shadow: 6px 6px 20px rgba(6, 18, 48, 0.4);
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    animation: slideUp 0.6s ease-out;
+
+    label {
+      font-size: 16px;
+      font-weight: var(--font-medium);
+      color: var(--dark);
+    }
+
+    input {
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(6, 18, 48, 0.3);
+      font-size: 16px;
       outline: none;
-      border-color: #2563eb; 
-      box-shadow: 0 0 0 3px rgba(#2563eb, 0.1);
+      transition: all 0.3s ease;
+
+      &:focus {
+        border-color: var(--dark);
+        box-shadow: 0 0 0 2px rgba(6, 18, 48, 0.15);
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+
+    .loginError {
+      background-color: rgba(180, 30, 30, 0.15);
+      border: 1px solid rgba(180, 30, 30, 0.4);
+      color: rgb(140, 20, 20);
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 14px;
+    }
+
+    .loginButton {
+      margin-top: 12px;
+      padding: 14px;
+      border-radius: 14px;
+      font-size: 18px;
+      font-weight: var(--font-medium);
+      cursor: pointer;
+
+      background-color: var(--dark);
+      color: var(--white);
+      box-shadow: 6px 6px 20px rgba(6, 18, 48, 0.4);
+
+      transition: all 0.3s ease;
+
+      &:hover:not(:disabled) {
+        transform: translateY(-4px);
+        background-color: var(--dark);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+
+      &:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+      }
+    }
+
+    .forgotButton {
+      margin-top: 4px;
+      background: none;
+      border: none;
+      font-size: 15px;
+      color: var(--dark);
+      text-decoration: underline;
+      cursor: pointer;
+
+      transition: all 0.3s ease;
+
+      &:hover {
+        transform: translateY(-2px);
+        color: rgba(6, 18, 48, 0.7);
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+
+@media (min-width: 768px) {
+  .loginContainer {
+    .loginHeader {
+      h1 {
+        font-size: 56px;
+      }
+
+      p {
+        font-size: 20px;
+      }
+    }
+
+    .loginForm {
+      max-width: 420px;
+          border-radius: 20px;
+      padding: 36px;
     }
   }
 }
 
-// 4. MENSAJE DE ERROR
-.login-error {
-  background-color: rgba(#ef4444, 0.1); 
-  color: #ef4444; 
-  padding: 10px;
-  border-radius: 6px;
-  margin-bottom: 1rem;
-  text-align: center;
-  font-size: 0.9rem;
-  border: 1px solid rgba(#ef4444, 0.2);
-}
+@media (min-width: 1024px) {
+  .loginContainer {
+     width: 100%;
+    .loginHeader {
+      h1 {
+        font-size: 80px;
+      }
+    }
 
-// 5. BOTONES
-.btn-primary {
-  background-color: #2563eb;
-  color: white;
-  padding: 12px;
-  border: none;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-  margin-top: 10px;
-  transition: background 0.3s;
-
-  &:hover { background-color: #1e40af; } 
-  &:disabled { background-color: #ccc; cursor: not-allowed; }
-}
-
-.btn-text {
-  background: none;
-  border: none;
-  color: #7d8591; // Gris claro
-  margin-top: 15px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  text-decoration: underline;
-
-  &:hover { color: #2563eb; } 
+    .loginForm {
+      max-width: 460px;
+    }
+  }
 }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import ChartRenderer from "./ChartRenderer/ChartRenderer";
 import { sendChatQuery } from "../../../service/chat.service";
 
@@ -6,6 +7,7 @@ const Chat = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
   const [userContext, setUserContext] = useState({});
   const messagesEndRef = useRef(null);
 
@@ -75,16 +77,18 @@ const Chat = () => {
 
 
   return (
-    <section className="chatArea">
-      <article className="messagesWindow">
+    <section>
+      <h1>Tu chatbot</h1>
+    <article className="chatArea">
+      <aside className="messagesWindow">
         {messages.map((msg, index) => (
           <div key={index} className={`message-item ${msg.sender}`}>
             <strong>{msg.sender === "user" ? "Tú:" : "Bot:"}</strong>
-            <span> {msg.text}</span>
-
+            <p> {msg.text}</p>
+            
             {/* Render de gráficos */}
             {msg.sender === "bot" && msg.payload?.type === "chart" && (
-              <div className="chart-container">
+              <div className="chartContainer">
                 <ChartRenderer payload={msg.payload} />
               </div>
             )}
@@ -102,7 +106,8 @@ const Chat = () => {
                         promedio_importe_total: "Promedio importe total",
                         total_cantidad: "Cantidad total",
                         pais: "País",
-                        // agrega más alias si quieres
+                        conteo_transacciones: "Conteo de transacciones",
+                    
                       };
                       return <th key={idx}>{nombresHumanos[col] || col}</th>;
                     })}
@@ -142,9 +147,9 @@ const Chat = () => {
           </div>
         ))}
         <div ref={messagesEndRef} />
-      </article>
+      </aside>
 
-      <form className="input-area" onSubmit={handleSend}>
+      <form className="inputArea" onSubmit={handleSend}>
         <input
           type="text"
           value={input}
@@ -154,10 +159,14 @@ const Chat = () => {
           }
           disabled={loading}
         />
-        <button type="submit" disabled={loading}>
+        <button className="submitButton" type="submit" disabled={loading}>
           {loading ? "..." : "Enviar"}
         </button>
       </form>
+    </article>
+      <button onClick={() => navigate(-1)}>
+      Volver
+    </button>
     </section>
   );
 };
