@@ -34,6 +34,15 @@ const LoginForm = () => {
       const { ok, data } = await loginUser(formData.email, formData.password);
 
       if (ok) {
+        // "Semáforo Rojo" - Detecta si es usuario nuevo
+        if(data.action === "FORCE_PASSWORD_CHANGE") {
+          // Redirigimos al empleado para cambiar contraseña pasando el email
+          navigate("/change-password", {
+            state: { email: data.user.email }
+          });
+          return; // Evita guardar el token
+        }
+
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
 
@@ -48,6 +57,7 @@ const LoginForm = () => {
       }
     } catch (err) {
       setError("Error inesperado. Intenta de nuevo.");
+      console.log(err);
     } finally {
       setLoading(false);
     }
