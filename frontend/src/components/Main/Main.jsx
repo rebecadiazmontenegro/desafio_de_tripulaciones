@@ -6,6 +6,7 @@ import SignUp from './SignUp/SignUp'
 import Dashboard from './Dashboards/Dashboards'
 import ChangePassword from './ChangePassword/ChangePassword'
 import UsersList from './UsersList/UsersList'
+import Chat from "./Chat/Chat";
 
 const Main = () => {
   return <main>
@@ -13,9 +14,11 @@ const Main = () => {
         <Route path="/" element={<Home />} />  
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
+        <Route path="/chat" element ={<Chat />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/change-password" element={<ChangePassword />} />
         <Route path="/users/list" element={<UsersList />} />
+
       </Routes>
     </main>;
 };
