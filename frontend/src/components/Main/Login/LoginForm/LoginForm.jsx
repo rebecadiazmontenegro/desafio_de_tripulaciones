@@ -54,11 +54,16 @@ const LoginForm = () => {
   };
 
   return (
-    <section>
-      <h1>Iniciar Sesión</h1>
-      <p>Ingresa tus credenciales para continuar</p>
-      <form>
-        {error && <div>{error}</div>}
+    <section className="login-container">
+      
+      <div className="login-header">
+        <h1>Iniciar Sesión</h1>
+        <p>Ingresa tus credenciales para continuar</p>
+      </div>
+
+      <form className="login-form">
+        {error && <div className="login-error">{error}</div>}
+        
         <label htmlFor="email">Email</label>
         <input
           type="email"
@@ -69,6 +74,7 @@ const LoginForm = () => {
           placeholder="Introduce tu correo"
           disabled={loading}
         />
+        
         <label htmlFor="password">Contraseña</label>
         <input
           type="password"
@@ -79,15 +85,22 @@ const LoginForm = () => {
           placeholder="Introduce tu contraseña"
           disabled={loading}
         />
-        <button onClick={handleSubmit} disabled={loading}>
+
+        <button 
+            className="btn-primary" 
+            onClick={handleSubmit} 
+            disabled={loading}
+        >
           {loading ? "Iniciando sesión..." : "Iniciar Sesión"}
         </button>
+
         <button
+          className="btn-text"
           onClick={() => navigate("/forgot/password")}
           disabled={loading}
           type="button"
         >
-          ¿Olvidaste tu contraseña?
+          ¿Olvidaste mi contraseña?
         </button>
       </form>
     </section>
