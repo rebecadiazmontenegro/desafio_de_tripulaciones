@@ -25,7 +25,9 @@
   },
   "homepage": "https://github.com/rebecadiazmontenegro/desafio_de_tripulaciones#readme",
   "dependencies": {
-    "nodemon": "^3.1.11"
+    "chart.js": "^4.5.1",
+    "nodemon": "^3.1.11",
+    "react-chartjs-2": "^5.3.1"
   },
   "devDependencies": {
     "concurrently": "^9.2.1",
