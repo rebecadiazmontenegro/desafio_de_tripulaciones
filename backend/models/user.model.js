@@ -49,7 +49,7 @@ const getAllWorkersModel = async () => {
 };
 
 const createUserModel = async (user) => {
-  const { nombre, apellidos, email, password, departamento, rol } = user;
+  const { nombre, apellidos, email, password, departamento, rol, reset_password_expires } = user;
   let client;
 
   try {
@@ -62,6 +62,8 @@ const createUserModel = async (user) => {
       password,
       departamento,
       rol,
+      true,
+      reset_password_expires
     ]);
 
     return data.rows[0];
@@ -71,7 +73,7 @@ const createUserModel = async (user) => {
   } finally {
     if (client) client.release();
   }
-};
+}; 
 
 const deleteUserByEmail = async (email) => {
   let client;
@@ -89,6 +91,7 @@ const deleteUserByEmail = async (email) => {
     if (client) client.release();
   }
 };
+
 const getUserByIdModel = async (id) => {
   const client = await pool.connect();
   try {
@@ -103,18 +106,28 @@ const getUserByIdModel = async (id) => {
   }
 };
 
-const updatePasswordModel = async (userId, hashedPassword) => {
-  const client = await pool.connect();
+// const updatePasswordModel = async (userId, hashedPassword) => {
+//   const client = await pool.connect();
+//   try {
+//     const query = "UPDATE users SET password = $1 WHERE id = $2";
+//     await client.query(query, [hashedPassword, userId]);
+//   } catch (error) {
+//     console.error("Error en updatePasswordModel:", error);
+//     throw error;
+//   } finally {
+//     client.release();
+//   }
+// };
+
+const updatePasswordModel = async (email, newPasswordHash) => {
   try {
-    const query = "UPDATE users SET password = $1 WHERE id = $2";
-    await client.query(query, [hashedPassword, userId]);
-  } catch (error) {
-    console.error("Error en updatePasswordModel:", error);
-    throw error;
-  } finally {
-    client.release();
+    const client = await pool.query(queries.updatePassword, [ newPasswordHash, email ]);
+    return client.rows[0];
+  } catch (err) {
+    console.log("Error en al Cambiar Contraseña:", err);
+    throw err;
   }
-};
+}
 
 
 module.exports = {
@@ -123,6 +136,6 @@ module.exports = {
   getAllManagersModel,
   getAllWorkersModel,
   deleteUserByEmail,
-    getUserByIdModel,
+  getUserByIdModel,
   updatePasswordModel,
 };
