@@ -1,0 +1,111 @@
+
+// Colores:
+$color-bg-window: #fefefe;    // Fondo blanco suave de la ventana
+$color-bg-page: #f5f7f9;     // Fondo muy ligero fuera de la ventana
+$color-primary: #1e70e3;     // Azul de acción (Botones)
+$color-user-bubble: #e1ecff; // Azul muy claro para burbujas de usuario
+$color-bot-bubble: #f1f3f6;  // Gris muy claro para burbujas del bot
+$color-text-dark: #333333;
+
+.chat-area {
+  display: flex;
+  flex-direction: column;
+  height: 100%; 
+  width: 100%;
+  max-width: 900px;
+  margin: 20px auto; // Le damos margen superior e inferior para que "flote"
+  background-color: $color-bg-window;
+  border-radius: 16px; // Esquinas muy suaves
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.03); // Sombra que simula flotar
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  overflow: hidden; // Asegura que el contenido respeta el border-radius
+}
+
+// 2. VENTANA DE MENSAJES
+.messages-window {
+  flex-grow: 1;
+  padding: 25px;
+  overflow-y: auto;
+  // Sin borde inferior, el diseño se integra con el input
+  display: flex;
+  flex-direction: column; // Para apilar las burbujas
+}
+
+.message-item {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  max-width: 75%; // Más estrecho, más legible
+  padding: 12px 18px;
+  border-radius: 18px; 
+  line-height: 1.6;
+  font-size: 0.95em;
+  color: $color-text-dark;
+  
+  strong {
+    font-weight: 700;
+    margin-bottom: 4px;
+    font-size: 0.85em;
+    opacity: 0.7; // El remitente es menos prominente
+  }
+}
+
+// Estilos específicos para BOT (Izquierda)
+.message-item.bot {
+  align-self: flex-start;
+  background-color: $color-bot-bubble; // Gris claro
+  border-top-left-radius: 4px; // Esquina ajustada para un diseño moderno
+}
+
+// Estilos específicos para USUARIO (Derecha)
+.message-item.user {
+  align-self: flex-end;
+  background-color: $color-user-bubble; // Azul claro
+  border-top-right-radius: 4px; // Esquina ajustada
+}
+
+// 3. ÁREA DE INPUT Y BOTÓN
+.input-area {
+  display: flex;
+  padding: 15px 25px;
+  gap: 15px;
+  background-color: #fcfcfc; // Fondo ligeramente más oscuro que el chat
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.input-area input[type="text"] {
+  flex-grow: 1; 
+  padding: 14px 22px;
+  border: 1px solid #dcdcdc;
+  border-radius: 30px; // Muy redondeado
+  font-size: 1em;
+  transition: border-color 0.3s;
+
+  &:focus {
+    outline: none;
+    border-color: #1e70e3; // $color-primary
+    box-shadow: 0 0 0 3px rgba(30, 112, 227, 0.1); // Sombra azul suave
+  }
+}
+
+.input-area button {
+  background-color: #1e70e3; // $color-primary
+  color: white;
+  border: none;
+  border-radius: 30px;
+  padding: 12px 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  min-width: 90px;
+  
+  // Hover sin usar darken() para evitar warnings:
+  &:hover:not(:disabled) {
+    background-color: #185abf; // Valor fijo ligeramente más oscuro
+  }
+
+  &:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+}
