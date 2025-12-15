@@ -21,9 +21,7 @@ const loginUser = async (req, res) => {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
 
-    // =========================================================================
-    // 1. NUEVA LÓGICA: Verificar si la cuenta está bloqueada ANTES de validar password
-    // =========================================================================
+    
     if (user.bloqueado_hasta) {
       const now = new Date();
       const lockDate = new Date(user.bloqueado_hasta);
@@ -36,14 +34,11 @@ const loginUser = async (req, res) => {
         });
       }
     }
-    // =========================================================================
 
     const isMatch = await bcrypt.compare(password, user.password);
     
     if (!isMatch) {
-      // =======================================================================
-      // 2. NUEVA LÓGICA: Contraseña incorrecta -> Sumar intentos y bloquear
-      // =======================================================================
+      // Contraseña incorrecta -> Sumar intentos y bloquear
       const currentAttempts = (user.intentos_fallidos || 0) + 1;
       let lockUntil = null;
       let errorMsg = "Contraseña incorrecta";
@@ -64,22 +59,18 @@ const loginUser = async (req, res) => {
         message: errorMsg,
         intentos_restantes: Math.max(0, 5 - currentAttempts)
       });
-      // =======================================================================
     }
 
-    // =========================================================================
-    // 3. NUEVA LÓGICA: Login Exitoso -> Resetear contadores a 0
-    // =========================================================================
+    
+    // Login Exitoso -> Resetear contadores a 0
     // Si la contraseña es correcta, limpiamos los fallos anteriores
     if(usersModels.updateLoginAttemptsModel) {
         await usersModels.updateLoginAttemptsModel(user.id, 0, null);
     }
-    // =========================================================================
 
 
-    // --- A PARTIR DE AQUÍ ES EL CÓDIGO DE TUS COMPAÑEROS (INTACTO) ---
     
-    // ¿Está el semáforo rojo activado? (Reset Password / Force Change)
+    // ¿Está el semáforo rojo activado? 
     if(user.reset_password) {
 
       const nowDate = new Date();
