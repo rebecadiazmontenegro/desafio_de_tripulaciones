@@ -3,38 +3,35 @@ import ChartRenderer from "./ChartRenderer/ChartRenderer";
 import { sendChatQuery } from "../../../service/chat.service";
 
 const Chat = () => {
-  // 1. ESTADOS
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [userContext, setUserContext] = useState({});
   const messagesEndRef = useRef(null);
 
-  // 2. RECUPERAR CONTEXTO DEL USUARIO
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUserContext(JSON.parse(storedUser));
-    }
+    const user = storedUser ? JSON.parse(storedUser) : {};
+    setUserContext(user);
+
+    const departamentoText = user.departamento
+      ? ` con los datos de ${user.departamento.toUpperCase()}`
+      : "";
 
     setMessages([
       {
         sender: "bot",
         text: `Hola, ${
-          JSON.parse(storedUser)?.nombre
-        }. Soy el Chatbot interno. ¿En qué puedo ayudarte con los datos de ${JSON.parse(
-          storedUser
-        )?.departamento.toUpperCase()}?`,
+          user.nombre ?? "Usuario"
+        }. Soy el Chatbot interno. ¿En qué puedo ayudarte${departamentoText}?`,
       },
     ]);
   }, []);
 
-  // 3. EFECTO DE SCROLL
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // 4. FUNCIÓN PARA ENVIAR EL MENSAJE Y HACER LA LLAMADA API
   const handleSend = async (e) => {
     e.preventDefault();
     if (input.trim() === "" || loading) return;
@@ -76,7 +73,7 @@ const Chat = () => {
     }
   };
 
-  // RENDERIZADO DEL CHAT
+
   return (
     <div className="chat-area">
       <div className="messages-window">
@@ -101,6 +98,9 @@ const Chat = () => {
                       const nombresHumanos = {
                         date_trunc: "Fecha",
                         max_importe_total: "Importe total máximo",
+                        total_importe_total: "Importe total",
+                        promedio_importe_total: "Promedio importe total",
+                        total_cantidad: "Cantidad total",
                         // agrega más alias si quieres
                       };
                       return <th key={idx}>{nombresHumanos[col] || col}</th>;
@@ -113,26 +113,24 @@ const Chat = () => {
                       {row.map((cell, cIdx) => {
                         const colName = msg.payload.data.columns[cIdx];
 
-                        // Formatear fecha
                         if (colName === "date_trunc") {
                           const fecha = new Date(cell);
                           return (
                             <td key={cIdx}>
-                              {`${fecha.getDate().toString().padStart(2, "0")}/${(
-                                fecha.getMonth() + 1
-                              )
+                              {`${fecha
+                                .getDate()
+                                .toString()
+                                .padStart(2, "0")}/${(fecha.getMonth() + 1)
                                 .toString()
                                 .padStart(2, "0")}/${fecha.getFullYear()}`}
                             </td>
                           );
                         }
 
-                        // Formatear números a 2 decimales
                         if (typeof cell === "number") {
                           return <td key={cIdx}>{cell.toFixed(2)}</td>;
                         }
 
-                        // Valores por defecto
                         return <td key={cIdx}>{cell}</td>;
                       })}
                     </tr>
