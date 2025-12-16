@@ -1,9 +1,10 @@
 const crypto = require('crypto');
 // Algoritmo aes-256-cbc
 const algotihm = 'aes-256-cbc';
-const key = process.env.ENCRYPTON_KEY;
+const key = process.env.ENCRYPTION_KEY;
 // Longitud del Vector de Inicialización
 const ivLength = 16;
+
 
 // Función para Encriptar
 const encrypt = (text) => {
@@ -38,7 +39,7 @@ const decrypt = (text) => {
         const encryptedText = Buffer.from(textParts.join(':'), 'hex');
 
         // Creamos el Descifrador (máquina modo reversa) / Le damos la misma llave e IV que acabamos de recuperar
-        const decipher = crypto.createCipheriv(algotihm, Buffer.from(key), iv);
+        const decipher = crypto.createDecipheriv(algotihm, Buffer.from(key), iv);
 
         // Procesamos Desencriptación
         let decrypted = decipher.update(encryptedText);

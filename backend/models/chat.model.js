@@ -1,6 +1,6 @@
-const { encrypt, decrypt } = require ("../utils/crypto.utils");
 const queries = require("../queries/chat.queries");
 const pool = require("../config/db_pgsql");
+const { encrypt, decrypt } = require ("../utils/crypto.utils");
 
 const saveMessagesModel = async (user_id, message, rol) => {
     try {
