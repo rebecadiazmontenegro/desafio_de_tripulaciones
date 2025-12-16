@@ -34,19 +34,16 @@ const LoginForm = () => {
       const { ok, data } = await loginUser(formData.email, formData.password);
 
       if (ok) {
-        // "Semáforo Rojo" - Detecta si es usuario nuevo
         if(data.action === "FORCE_PASSWORD_CHANGE") {
-          // Redirigimos al empleado para cambiar contraseña pasando el email
           navigate("/change-password", {
             state: { email: data.user.email }
           });
-          return; // Evita guardar el token
+          return;
         }
 
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
 
-        // Redirigir según el rol
         if (data.user.rol === "admin" || data.user.rol === "manager") {
           navigate("/dashboard", { replace: true });
         } else {
@@ -64,15 +61,15 @@ const LoginForm = () => {
   };
 
   return (
-    <section className="login-container">
+    <section className="loginContainer">
       
-      <div className="login-header">
+      <div className="loginHeader">
         <h1>Iniciar Sesión</h1>
         <p>Ingresa tus credenciales para continuar</p>
       </div>
 
-      <form className="login-form">
-        {error && <div className="login-error">{error}</div>}
+      <form className="loginForm">
+        {error && <div className="loginError">{error}</div>}
         
         <label htmlFor="email">Email</label>
         <input
@@ -97,7 +94,7 @@ const LoginForm = () => {
         />
 
         <button 
-            className="btn-primary" 
+            className="loginButton" 
             onClick={handleSubmit} 
             disabled={loading}
         >
@@ -105,12 +102,12 @@ const LoginForm = () => {
         </button>
 
         <button
-          className="btn-text"
+          className="forgotButton"
           onClick={() => navigate("/forgot/password")}
           disabled={loading}
           type="button"
         >
-          ¿Olvidaste mi contraseña?
+          Olvidé mi contraseña
         </button>
       </form>
     </section>

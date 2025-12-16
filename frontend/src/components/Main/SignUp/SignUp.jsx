@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SignUpForm from "./SignUpForm/SignUpForm";
 
+
 const SignUp = () => {
   const navigate = useNavigate();
   const [isAuthorized, setIsAuthorized] = useState(null);

@@ -105,7 +105,7 @@ const loginUser = async (req, res) => {
         departamento: user.departamento  
       },
       process.env.JWT_SECRET,
-      { expiresIn: "2h" }
+      { expiresIn: "1h" }
     );
 
     // Generamos token

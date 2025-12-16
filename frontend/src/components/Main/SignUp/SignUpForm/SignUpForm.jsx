@@ -41,12 +41,13 @@ const SignUpAdminForm = () => {
 
   return (
     <article className="signUpAdmin">
-      <h2>Crear usuario</h2>
+      <h1>Crear usuario</h1>
       {message && <p>{message}</p>}
       <form className="signUpAdminForm" onSubmit={handleSubmit}>
         <label>Nombre:</label>
         <input
           type="text"
+          placeholder="Introduce tu nombre"
           name="nombre"
           value={form.nombre}
           onChange={handleChange}
@@ -56,6 +57,7 @@ const SignUpAdminForm = () => {
         <label>Apellidos:</label>
         <input
           type="text"
+          placeholder="Introduce tus apellidos"
           name="apellidos"
           value={form.apellidos}
           onChange={handleChange}
@@ -65,6 +67,7 @@ const SignUpAdminForm = () => {
         <label>Email:</label>
         <input
           type="email"
+          placeholder="Introduce tu correo"
           name="email"
           value={form.email}
           onChange={handleChange}
