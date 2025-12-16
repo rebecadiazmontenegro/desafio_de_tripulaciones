@@ -1,6 +1,7 @@
 const chatModels = require("../models/chat.model");
 
 const saveMessages = async (req, res) => {
+    const API_BASE_URL = 'https://proyecto-chat-bot-grupo-2.onrender.com';
     try {
         const { message } = req.body;
         const user_id = req.user.id;
@@ -9,11 +10,20 @@ const saveMessages = async (req, res) => {
         }
         await chatModels.saveMessagesModel(user_id, message, 'user');
 
-        // PASO 2: LLAMAR AL BOT USANDO FETCH
+            const responseBot = await fetch(`${API_BASE_URL}/query`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    prompt: message })
+            });
+            if(!responseBot.ok){
+                throw new Error("Error de API para conectar el bot")
+            } 
+            const data = await responseBot.json();
+            console.log("Respuesta del Bot: ", data);
 
-        // Aquí va la llamada a la API
-        const responseBot = "Esto es una respuesta automática del Bot";
-        const messageSaveBot = await chatModels.saveMessagesModel(user_id, responseBot, 'bot');
+            const botText = JSON.stringify(data);
+            const messageSaveBot = await chatModels.saveMessagesModel(user_id, botText, 'bot');
 
         // Devolvemos el mensaje de bot
         res.status(201).json(messageSaveBot);
