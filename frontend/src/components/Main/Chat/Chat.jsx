@@ -132,48 +132,59 @@ const Chat = () => {
               )}
 
               {msg.sender === "bot" && msg.payload?.type === "data" && (
-                <table className="dataTable">
-                  <thead>
-                    <tr>
-                      {msg.payload.data.columns.map((col, idx) => {
-                        const nombresHumanos = {
-                          date_trunc: "Fecha",
-                          max_importe_total: "Importe total máximo",
-                          total_importe_total: "Importe total",
-                          promedio_importe_total: "Promedio importe total",
-                          total_cantidad: "Cantidad total",
-                          pais: "País",
-                          conteo_transacciones: "Conteo de transacciones",
-                        };
-                        return <th key={idx}>{nombresHumanos[col] || col}</th>;
-                      })}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {msg.payload.data.rows.map((row, rIdx) => (
-                      <tr key={rIdx}>
-                        {row.map((cell, cIdx) => {
-                          const colName = msg.payload.data.columns[cIdx];
-
-                          if (colName === "date_trunc") {
-                            const fecha = new Date(cell);
-                            const dia = fecha
-                              .getUTCDate()
-                              .toString()
-                              .padStart(2, "0");
-                            const mes = (fecha.getUTCMonth() + 1)
-                              .toString()
-                              .padStart(2, "0");
-                            const año = fecha.getUTCFullYear();
-                            return <td key={cIdx}>{`${dia}/${mes}/${año}`}</td>;
-                          }
-
-                          return <td key={cIdx}>{cell}</td>;
+                <>
+                  <table className="dataTable">
+                    <thead>
+                      <tr>
+                        {msg.payload.data.columns.map((col, idx) => {
+                          const nombresHumanos = {
+                            date_trunc: "Fecha",
+                            max_importe_total: "Importe total máximo",
+                            total_importe_total: "Importe total",
+                            promedio_importe_total: "Promedio importe total",
+                            total_cantidad: "Cantidad total",
+                            pais: "País",
+                            conteo_transacciones: "Conteo de transacciones",
+                          };
+                          return (
+                            <th key={idx}>{nombresHumanos[col] || col}</th>
+                          );
                         })}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {msg.payload.data.rows.map((row, rIdx) => (
+                        <tr key={rIdx}>
+                          {row.map((cell, cIdx) => {
+                            const colName = msg.payload.data.columns[cIdx];
+
+                            if (colName === "date_trunc") {
+                              const fecha = new Date(cell);
+                              const dia = fecha
+                                .getUTCDate()
+                                .toString()
+                                .padStart(2, "0");
+                              const mes = (fecha.getUTCMonth() + 1)
+                                .toString()
+                                .padStart(2, "0");
+                              const año = fecha.getUTCFullYear();
+                              return (
+                                <td key={cIdx}>{`${dia}/${mes}/${año}`}</td>
+                              );
+                            }
+
+                            return <td key={cIdx}>{cell}</td>;
+                          })}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <DescargarCSV
+                    data={msg.payload.data.rows}
+                    columns={msg.payload.data.columns}
+                    fileName="datos_tabla.csv"
+                  />
+                </>
               )}
             </div>
           ))}
