@@ -40,6 +40,10 @@ const ManagerDashboard = ({ userName }) => {
           <h3>CHAT</h3>
           <p>Administra los proyectos activos</p>
         </button>
+        <button onClick={() => navigate("/guia")}>
+          <MessageCircle size={28} />
+          <h3>Guia de uso</h3>
+        </button>
       </article>
       <article>
         <button onClick={() => navigate("/change-password")}>
