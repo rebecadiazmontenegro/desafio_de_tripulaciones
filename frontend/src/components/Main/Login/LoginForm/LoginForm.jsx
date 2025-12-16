@@ -34,7 +34,7 @@ const LoginForm = () => {
       const { ok, data } = await loginUser(formData.email, formData.password);
 
       if (ok) {
-        // ✅ VERIFICAR SI NECESITA CAMBIAR CONTRASEÑA (PRIMERO)
+        // VERIFICAR SI NECESITA CAMBIAR CONTRASEÑA (PRIMERO)
         if (data.action === "FORCE_PASSWORD_CHANGE") {
           console.log("🔄 Usuario con contraseña temporal detectado");
           
@@ -43,7 +43,7 @@ const LoginForm = () => {
             localStorage.setItem("token", data.token);
           }
           
-          // ⭐ Navegar a cambiar contraseña con los datos necesarios
+          // Navegar a cambiar contraseña con los datos necesarios
           navigate("/change/password", {  // ← Corregido: guion, no slash
             state: { 
               email: data.user?.email || formData.email,
