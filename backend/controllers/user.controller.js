@@ -269,6 +269,59 @@ const deleteUser = async (req, res) => {
   }
 };
 
+const changePasswordUnified = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const userId = req.user.id; // usuario autenticado
+
+    if (!newPassword) {
+      return res.status(400).json({ message: "Nueva contraseña requerida." });
+    }
+
+    const user = await usersModels.getUserByIdModel(userId);
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado." });
+    }
+
+    // Si el usuario tiene contraseña temporal activa
+    if (user.reset_password) {
+      if (!currentPassword) {
+        return res.status(400).json({ message: "Contraseña temporal requerida." });
+      }
+
+      const isTempMatch = await bcrypt.compare(currentPassword, user.password);
+      if (!isTempMatch) {
+        return res.status(401).json({ message: "Contraseña temporal incorrecta." });
+      }
+
+      // Todo correcto, se quita el semáforo de reset
+      user.reset_password = false;
+      user.reset_password_expires = null;
+    } else {
+      // Cambio de contraseña normal: verificar la actual
+      if (!currentPassword) {
+        return res.status(400).json({ message: "Contraseña actual requerida." });
+      }
+
+      const isCurrentMatch = await bcrypt.compare(currentPassword, user.password);
+      if (!isCurrentMatch) {
+        return res.status(401).json({ message: "Contraseña actual incorrecta." });
+      }
+    }
+
+    // Hashear y guardar la nueva contraseña
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await usersModels.updatePasswordModel(user.email, hashedPassword, user.reset_password, user.reset_password_expires);
+
+    return res.status(200).json({ message: "Contraseña actualizada correctamente." });
+
+  } catch (error) {
+    console.error("Error cambiando contraseña:", error);
+    return res.status(500).json({ message: "Error del servidor." });
+  }
+};
+
+
 // const changePassword = async (req, res) => {
 //   const errors = validationResult(req);
 //   if (!errors.isEmpty()) {
@@ -313,44 +366,44 @@ const deleteUser = async (req, res) => {
 //   }
 // };
 
-const updatePassword = async (req,res) => {
-  const { email, defaultPassword, newPassword } = req.body;
+// const updatePassword = async (req,res) => {
+//   const { email, defaultPassword, newPassword } = req.body;
 
-  if(!email || !defaultPassword || !newPassword) {
-    return res.status(400).json({ message: "Faltan datos obligatorios." });
-  }
+//   if(!email || !defaultPassword || !newPassword) {
+//     return res.status(400).json({ message: "Faltan datos obligatorios." });
+//   }
 
-  try {
-    // Buscamos al usuario
-    const user = await usersModels.getUserModel(email);
-    if(!user) {
-      return res.status(400).json({ message: "Usuario no encontrado."});
-    }
+//   try {
+//     // Buscamos al usuario
+//     const user = await usersModels.getUserModel(email);
+//     if(!user) {
+//       return res.status(400).json({ message: "Usuario no encontrado."});
+//     }
 
-    // Vemos si la contraseña temporal coincide con la que está guardada
-    const verifyPassword = await bcrypt.compare(defaultPassword, user.password);
-    console.log("3. Contraseña coincide:", verifyPassword);
-    if(!verifyPassword) {
-      return res.status(400).json({ message: "La contraseña aleatoria es incorrecta." });
-    }
+//     // Vemos si la contraseña temporal coincide con la que está guardada
+//     const verifyPassword = await bcrypt.compare(defaultPassword, user.password);
+//     console.log("3. Contraseña coincide:", verifyPassword);
+//     if(!verifyPassword) {
+//       return res.status(400).json({ message: "La contraseña aleatoria es incorrecta." });
+//     }
 
-    // Hasheamos la Nueva Contraseña
-    const newPasswordHash = await bcrypt.hash(newPassword, 10);
+//     // Hasheamos la Nueva Contraseña
+//     const newPasswordHash = await bcrypt.hash(newPassword, 10);
 
 
-    // Guardamos en la BBDD
-    await usersModels.updatePasswordModel(email, newPasswordHash);
+//     // Guardamos en la BBDD
+//     await usersModels.updatePasswordModel(email, newPasswordHash);
 
-    // if(!userUpdate) {
-    //   return res.status(404).json({ message: "No se encontró el usuario. Verifica el email."});
-    // }
-    res.status(200).json({ message: "Contraseña actualiza! Inicia Sesión." });
+//     // if(!userUpdate) {
+//     //   return res.status(404).json({ message: "No se encontró el usuario. Verifica el email."});
+//     // }
+//     res.status(200).json({ message: "Contraseña actualiza! Inicia Sesión." });
 
-  } catch (error) {
-        console.error("Error al Cambiar Contraseña:", error);
-        res.status(500).json({ message: "Error del servidor" });
-    }
-}
+//   } catch (error) {
+//         console.error("Error al Cambiar Contraseña:", error);
+//         res.status(500).json({ message: "Error del servidor" });
+//     }
+// }
 
 module.exports = {
   signUp,
@@ -360,5 +413,6 @@ module.exports = {
   getAllManagers,
   getAllWorkers,
   // changePassword,
-  updatePassword
+  // updatePassword
+  changePasswordUnified
 };

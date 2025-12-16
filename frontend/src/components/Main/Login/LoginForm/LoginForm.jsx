@@ -42,6 +42,14 @@ const LoginForm = () => {
         }
 
         localStorage.setItem("token", data.token);
+
+        
+        // 🔹 Contraseña temporal: fuerza cambio
+        if (data.action === "FORCE_PASSWORD_CHANGE") {
+          navigate("/change/password", { replace: true });
+          return;
+        }
+
         localStorage.setItem("user", JSON.stringify(data.user));
 
         if (data.user.rol === "admin" || data.user.rol === "manager") {

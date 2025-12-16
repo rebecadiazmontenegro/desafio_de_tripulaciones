@@ -119,15 +119,15 @@ const getUserByIdModel = async (id) => {
 //   }
 // };
 
-const updatePasswordModel = async (email, newPasswordHash) => {
-  try {
-    const client = await pool.query(queries.updatePassword, [ newPasswordHash, email ]);
-    return client.rows[0];
-  } catch (err) {
-    console.log("Error en al Cambiar Contraseña:", err);
-    throw err;
-  }
-}
+// const updatePasswordModel = async (email, newPasswordHash) => {
+//   try {
+//     const client = await pool.query(queries.updatePassword, [ newPasswordHash, email ]);
+//     return client.rows[0];
+//   } catch (err) {
+//     console.log("Error en al Cambiar Contraseña:", err);
+//     throw err;
+//   }
+// }
 
 const updateLoginAttemptsModel = async (userId, attempts, lockUntil) => {
   let client;
@@ -143,6 +143,26 @@ const updateLoginAttemptsModel = async (userId, attempts, lockUntil) => {
   }
 };
 
+const updatePasswordModel = async (email, hashedPassword, resetPassword = false, resetExpires = null) => {
+  try {
+    const query = `
+      UPDATE users
+      SET password = $1,
+          reset_password = $2,
+          reset_password_expires = $3
+      WHERE email = $4
+      RETURNING id, nombre, apellidos, email;
+    `;
+
+    const values = [hashedPassword, resetPassword, resetExpires, email];
+
+    const result = await pool.query(query, values);
+    return result.rows[0]; // Devuelve el usuario actualizado
+  } catch (error) {
+    console.error("Error en updatePasswordModel:", error);
+    throw new Error("Error actualizando la contraseña.");
+  }
+};
 
 module.exports = {
   createUserModel,
