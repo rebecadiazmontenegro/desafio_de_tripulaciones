@@ -34,35 +34,41 @@ const LoginForm = () => {
       const { ok, data } = await loginUser(formData.email, formData.password);
 
       if (ok) {
-        if(data.action === "FORCE_PASSWORD_CHANGE") {
-          navigate("/change-password", {
-            state: { email: data.user.email }
-          });
-          return;
-        }
-
-        localStorage.setItem("token", data.token);
-
-        
-        // 🔹 Contraseña temporal: fuerza cambio
+        // VERIFICAR SI NECESITA CAMBIAR CONTRASEÑA (PRIMERO)
         if (data.action === "FORCE_PASSWORD_CHANGE") {
-          navigate("/change/password", { replace: true });
-          return;
+          console.log("🔄 Usuario con contraseña temporal detectado");
+          
+          // Guardar token temporal si viene
+          if (data.token) {
+            localStorage.setItem("token", data.token);
+          }
+          
+          // Navegar a cambiar contraseña con los datos necesarios
+          navigate("/change/password", {  // ← Corregido: guion, no slash
+            state: { 
+              email: data.user?.email || formData.email,
+              tempPassword: formData.password,
+              isTemporaryPassword: true
+            }
+          });
+          return;  // ← IMPORTANTE: return para no continuar
         }
 
+        // ✅ LOGIN NORMAL (si no necesita cambiar contraseña)
+        console.log("✅ Login exitoso");
+        
+        localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
 
-        if (data.user.rol === "admin" || data.user.rol === "manager") {
-          navigate("/dashboard", { replace: true });
-        } else {
-          navigate("/dashboard", { replace: true });
-        }
+        // Navegar al dashboard
+        navigate("/dashboard", { replace: true });
+
       } else {
         setError(data.message || "Error en el login");
       }
     } catch (err) {
       setError("Error inesperado. Intenta de nuevo.");
-      console.log(err);
+      console.error("Error en login:", err);
     } finally {
       setLoading(false);
     }
@@ -111,7 +117,7 @@ const LoginForm = () => {
 
         <button
           className="forgotButton"
-          onClick={() => navigate("/forgot/password")}
+          onClick={() => navigate("/forgot-password")}
           disabled={loading}
           type="button"
         >
