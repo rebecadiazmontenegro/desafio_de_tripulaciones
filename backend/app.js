@@ -24,7 +24,6 @@ app.use(
   })
 );
 
-
 app.use(
   cors({
     origin: process.env.FRONTEND_URL,
@@ -37,6 +36,7 @@ app.use(express.static(path.join(__dirname, "public")));
 const usersRoutes = require("./routes/user.routes");
 app.use("/user", usersRoutes);
 
+         
 const frontendPath = path.join(__dirname, "../frontend/dist");
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(frontendPath));

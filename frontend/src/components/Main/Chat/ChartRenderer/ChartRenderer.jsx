@@ -33,6 +33,7 @@ const ChartRenderer = ({ payload }) => {
     total_importe_total: "Importe total",
     promedio_importe_total: "Promedio importe total",
     total_cantidad: "Cantidad total",
+    pais: "País",
   };
 
   // Formatear labels
