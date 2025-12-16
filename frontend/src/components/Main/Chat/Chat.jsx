@@ -2,16 +2,21 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import ChartRenderer from "./ChartRenderer/ChartRenderer";
 import { sendChatQuery } from "../../../service/chat.service";
+import { Download, FileText, BarChart2, Send, ArrowLeft } from "lucide-react";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 const Chat = () => {
   const [isAuthorized, setIsAuthorized] = useState(null);
-
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
   const [userContext, setUserContext] = useState({});
+
   const messagesEndRef = useRef(null);
+  const chatRef = useRef(null);
 
   useEffect(() => {
     const checkAuthorization = () => {
@@ -24,27 +29,18 @@ const Chat = () => {
 
       try {
         const payload = JSON.parse(atob(token.split(".")[1]));
-
-        if (payload) {
-          setIsAuthorized(true);
-        } else {
-          setIsAuthorized(false);
-        }
+        setIsAuthorized(!!payload);
 
         const storedUser = localStorage.getItem("user");
         const user = storedUser ? JSON.parse(storedUser) : {};
         setUserContext(user);
-
-        const departamentoText = user.departamento
-          ? ` con los datos de ${user.departamento.toUpperCase()}`
-          : "";
 
         setMessages([
           {
             sender: "bot",
             text: `Hola, ${
               user.nombre ?? "Usuario"
-            }. Soy el Chatbot interno. ¿En qué puedo ayudarte${departamentoText}?`,
+            }. Soy el Chatbot interno. ¿Con qué datos puedo ayudarte?`,
           },
         ]);
       } catch (error) {
@@ -62,7 +58,7 @@ const Chat = () => {
 
   const handleSend = async (e) => {
     e.preventDefault();
-    if (input.trim() === "" || loading) return;
+    if (!input.trim() || loading) return;
 
     const userMessage = input.trim();
     setInput("");
@@ -73,22 +69,16 @@ const Chat = () => {
     try {
       const data = await sendChatQuery(userMessage);
 
-      let botText = "";
+      let botText = "No he podido interpretar la respuesta.";
       if (data.type === "data") {
         botText = `He encontrado ${data.data.rows.length} resultados.`;
       } else if (data.type === "chart") {
         botText = `He generado un gráfico de tipo ${data.chart_type}.`;
-      } else {
-        botText = "No he podido interpretar la respuesta.";
       }
 
       setMessages((prev) => [
         ...prev,
-        {
-          sender: "bot",
-          text: botText,
-          payload: data,
-        },
+        { sender: "bot", text: botText, payload: data },
       ]);
     } catch (error) {
       console.error(error);
@@ -101,9 +91,155 @@ const Chat = () => {
     }
   };
 
-  if (isAuthorized === null) {
-    return <p>Verificando permisos...</p>;
-  }
+  const handleDownloadPDF = async () => {
+    if (!chatRef.current) return;
+
+    const originalOverflow = chatRef.current.style.overflow;
+    const originalHeight = chatRef.current.style.height;
+    const originalMaxHeight = chatRef.current.style.maxHeight;
+
+    chatRef.current.style.overflow = "visible";
+    chatRef.current.style.height = "auto";
+    chatRef.current.style.maxHeight = "none";
+
+    const canvas = await html2canvas(chatRef.current, {
+      scale: 3,
+      useCORS: true,
+      backgroundColor: "#ffffff",
+      allowTaint: true,
+      logging: false,
+      onclone: (clonedDoc) => {
+        const style = clonedDoc.createElement("style");
+        style.textContent = `
+          * {
+            opacity: 1 !important;
+            -webkit-opacity: 1 !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+          }
+          
+          .chatArea {
+            background-color: #ffffff !important;
+          }
+          
+          .messagesWindow {
+            background-color: #ffffff !important;
+            overflow: visible !important;
+            height: auto !important;
+            max-height: none !important;
+          }
+          
+          .message-item {
+            opacity: 1 !important;
+          }
+          
+          .message-item.bot {
+            background-color: #f5f5f5 !important;
+          }
+          
+          .message-item.user {
+            background-color: #a8c5f0 !important;
+          }
+          
+          .message-item strong {
+            opacity: 1 !important;
+            color: #000000 !important;
+            font-weight: 600 !important;
+          }
+          
+          .message-item span,
+          strong, span, p, div {
+            color: #000000 !important;
+            opacity: 1 !important;
+          }
+          
+          .dataTable th,
+          .dataTable td {
+            background: #ffffff !important;
+            border: 1px solid #333333 !important;
+            color: #000000 !important;
+            opacity: 1 !important;
+          }
+          
+          .dataTable tr:nth-child(even) td {
+            background-color: #f0f0f0 !important;
+          }
+          
+          .chartContainer {
+            background-color: #ffffff !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+          }
+          
+          canvas {
+            opacity: 1 !important;
+            filter: contrast(1.5) saturate(1.5) brightness(1.05) !important;
+          }
+          
+          .csv-download-btn {
+            display: none !important;
+          }
+        `;
+        clonedDoc.head.appendChild(style);
+
+        clonedDoc.querySelectorAll("*").forEach((el) => {
+          el.style.setProperty("opacity", "1", "important");
+          el.style.setProperty("backdrop-filter", "none", "important");
+          el.style.setProperty("-webkit-backdrop-filter", "none", "important");
+        });
+      },
+    });
+
+    chatRef.current.style.overflow = originalOverflow;
+    chatRef.current.style.height = originalHeight;
+    chatRef.current.style.maxHeight = originalMaxHeight;
+
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF("p", "mm", "a4");
+
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+    let heightLeft = pdfHeight;
+    let position = 0;
+    const pageHeight = pdf.internal.pageSize.getHeight();
+
+    pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+    heightLeft -= pageHeight;
+
+    while (heightLeft > 0) {
+      position -= pageHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+      heightLeft -= pageHeight;
+    }
+
+    pdf.save("chat.pdf");
+  };
+
+  const handleDownloadCSV = (data, filename = "datos.csv") => {
+    const columns = data.columns;
+    const rows = data.rows;
+
+    let csv = columns.join(",") + "\n";
+    rows.forEach((row) => {
+      csv += row.map((cell) => `"${cell}"`).join(",") + "\n";
+    });
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    link.click();
+  };
+
+  const handleDownloadChartCSV = (payload) => {
+    const data = payload.data;
+    handleDownloadCSV(data, `grafico_${payload.chart_type}.csv`);
+  };
+
+  if (isAuthorized === null) return <p>Verificando permisos...</p>;
+
   if (isAuthorized === false) {
     return (
       <div>
@@ -118,7 +254,7 @@ const Chat = () => {
     <section>
       <h1>Tu chatbot</h1>
       <article className="chatArea">
-        <aside className="messagesWindow">
+        <aside className="messagesWindow" ref={chatRef}>
           {messages.map((msg, index) => (
             <div key={index} className={`message-item ${msg.sender}`}>
               <strong>{msg.sender === "user" ? "Tú:" : "Bot:"}</strong>
@@ -127,52 +263,63 @@ const Chat = () => {
               {msg.sender === "bot" && msg.payload?.type === "chart" && (
                 <div className="chartContainer">
                   <ChartRenderer payload={msg.payload} />
+                  <button
+                    className="csv-download-btn"
+                    onClick={() => handleDownloadChartCSV(msg.payload)}
+                  >
+                    <BarChart2 size={16} /> Descargar datos CSV
+                  </button>
                 </div>
               )}
 
               {msg.sender === "bot" && msg.payload?.type === "data" && (
-                <table className="dataTable">
-                  <thead>
-                    <tr>
-                      {msg.payload.data.columns.map((col, idx) => {
-                        const nombresHumanos = {
-                          date_trunc: "Fecha",
-                          max_importe_total: "Importe total máximo",
-                          total_importe_total: "Importe total",
-                          promedio_importe_total: "Promedio importe total",
-                          total_cantidad: "Cantidad total",
-                          pais: "País",
-                          conteo_transacciones: "Conteo de transacciones",
-                        };
-                        return <th key={idx}>{nombresHumanos[col] || col}</th>;
-                      })}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {msg.payload.data.rows.map((row, rIdx) => (
-                      <tr key={rIdx}>
-                        {row.map((cell, cIdx) => {
-                          const colName = msg.payload.data.columns[cIdx];
-
-                          if (colName === "date_trunc") {
-                            const fecha = new Date(cell);
-                            const dia = fecha
-                              .getUTCDate()
-                              .toString()
-                              .padStart(2, "0");
-                            const mes = (fecha.getUTCMonth() + 1)
-                              .toString()
-                              .padStart(2, "0");
-                            const año = fecha.getUTCFullYear();
-                            return <td key={cIdx}>{`${dia}/${mes}/${año}`}</td>;
-                          }
-
-                          return <td key={cIdx}>{cell}</td>;
+                <>
+                  <table className="dataTable">
+                    <thead>
+                      <tr>
+                        {msg.payload.data.columns.map((col, idx) => {
+                          const nombresHumanos = {
+                            date_trunc: "Fecha",
+                            max_importe_total: "Importe total máximo",
+                            total_importe_total: "Importe total",
+                            promedio_importe_total: "Promedio importe total",
+                            total_cantidad: "Cantidad total",
+                            pais: "País",
+                            conteo_transacciones: "Conteo de transacciones",
+                          };
+                          return (
+                            <th key={idx}>{nombresHumanos[col] || col}</th>
+                          );
                         })}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {msg.payload.data.rows.map((row, rIdx) => (
+                        <tr key={rIdx}>
+                          {row.map((cell, cIdx) => {
+                            const colName = msg.payload.data.columns[cIdx];
+
+                            if (colName === "date_trunc") {
+                              const fecha = new Date(cell);
+                              return (
+                                <td key={cIdx}>{fecha.toLocaleDateString()}</td>
+                              );
+                            }
+                            return <td key={cIdx}>{cell}</td>;
+                          })}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <button
+                    className="csv-download-btn"
+                    onClick={() =>
+                      handleDownloadCSV(msg.payload.data, "tabla_datos.csv")
+                    }
+                  >
+                    <FileText size={16} /> Descargar tabla CSV
+                  </button>
+                </>
               )}
             </div>
           ))}
@@ -189,12 +336,28 @@ const Chat = () => {
             }
             disabled={loading}
           />
-          <button className="submitButton" type="submit" disabled={loading}>
-            {loading ? "..." : "Enviar"}
-          </button>
+          <div className="chatButtons">
+            <button type="submit" disabled={loading}>
+              {loading ? (
+                "..."
+              ) : (
+                <>
+                  <Send size={16} /> Enviar
+                </>
+              )}
+            </button>
+            <button onClick={handleDownloadPDF}>
+              <Download size={16} /> Descargar chat en PDF
+            </button>
+          </div>
         </form>
       </article>
-      <button onClick={() => navigate(-1)}>Volver</button>
+
+      <button
+        onClick={() => navigate(-1)}
+      >
+        <ArrowLeft size={16} /> Volver
+      </button>
     </section>
   );
 };
