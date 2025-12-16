@@ -34,7 +34,7 @@ const WorkerDashboard = ({ userName }) => {
         <aside className="profileButtons">
         <button
           className="changePasswordButton"
-          onClick={() => navigate("/change-password")}
+          onClick={() => navigate("/change/password")}
         >
           <Key size={24} />
           <h3>Cambiar Contraseña</h3>

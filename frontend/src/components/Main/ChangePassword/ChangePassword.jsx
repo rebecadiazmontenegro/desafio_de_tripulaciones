@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import axios from "axios";
+import { changePassword } from "../../../service/users.service"; // importa tu service
 
 const ChangePassword = () => {
   const navigate = useNavigate();
-  const location = useLocation(); // Leemos lo que nos manda el login
-  const emailFromLogin = location.state?.email;
+  const location = useLocation();
+  // const emailFromLogin = location.state?.email;
 
   const [formData, setFormData] = useState({
     currentPassword: "",
@@ -16,12 +16,20 @@ const ChangePassword = () => {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Si no hay email, LLevamos a login
+  // Si no hay email, redirigir a login
+  // useEffect(() => {
+  //   if (!emailFromLogin) {
+  //     navigate("/login");
+  //   }
+  // }, [emailFromLogin, navigate]);
+
+  const token = localStorage.getItem("token");
+
   useEffect(() => {
-    if(!emailFromLogin) {
-      navigate("/login");
+    if (!token) {
+      navigate("/login", { replace: true });
     }
-  }, [ emailFromLogin, navigate]);
+  }, [token, navigate]);
 
   const handleChange = (e) => {
     setFormData({
@@ -38,53 +46,40 @@ const ChangePassword = () => {
     setSuccess("");
     setLoading(true);
 
-    if (!formData.currentPassword || !formData.newPassword || !formData.confirmPassword) {
+    const { currentPassword, newPassword, confirmPassword } = formData;
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
       setError("Todos los campos son requeridos");
       setLoading(false);
       return;
     }
 
-    if (formData.newPassword !== formData.confirmPassword) {
+    if (newPassword !== confirmPassword) {
       setError("Las contraseñas nuevas no coinciden");
       setLoading(false);
       return;
     }
 
-    if (formData.newPassword.length < 6) {
+    if (newPassword.length < 6) {
       setError("La nueva contraseña debe tener al menos 6 caracteres");
       setLoading(false);
       return;
     }
 
     try {
-      const urlChangePassword = `${import.meta.env.VITE_API_URL}/user/change-password`;
-      const response = await axios.put(urlChangePassword, {
-        email: emailFromLogin,
-        defaultPassword: formData.currentPassword,
-        newPassword: formData.newPassword
-      })
+      const { ok, data } = await changePassword({ currentPassword, newPassword });
 
-      // const { ok, data } = await changePassword(
-      //   formData.currentPassword,
-      //   formData.newPassword
-      // );
-
-      // if (response.ok) {
-      //   setSuccess(response.data.message);
-      //   setTimeout(() => {
-      //     navigate("/login");
-      //   }, 2000);
-      // } else {
-      //   setError(response.data.message || "Error al cambiar la contraseña");
-      // }
-      setSuccess(response.data.message);
-
-      setTimeout(() => {
-        navigate("/login");
-      }, 2000);
+      if (ok) {
+        setSuccess(data.message || "Contraseña actualizada correctamente");
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
+      } else {
+        setError(data.message || "Error al cambiar la contraseña");
+      }
     } catch (err) {
+      console.error(err);
       setError("Error inesperado. Intenta de nuevo.");
-      console.log(err);
     } finally {
       setLoading(false);
     }
@@ -98,17 +93,8 @@ const ChangePassword = () => {
       </article>
 
       <article>
-        {error && (
-          <div>
-            <p>{error}</p>
-          </div>
-        )}
-
-        {success && (
-          <div>
-            <p>{success}</p>
-          </div>
-        )}
+        {error && <div><p style={{ color: "red" }}>{error}</p></div>}
+        {success && <div><p style={{ color: "green" }}>{success}</p></div>}
 
         <article>
           <label htmlFor="currentPassword">Contraseña Actual</label>
@@ -152,7 +138,6 @@ const ChangePassword = () => {
         <button onClick={handleSubmit} disabled={loading}>
           {loading ? "Cambiando..." : "Cambiar Contraseña"}
         </button>
-
         <button onClick={() => navigate("/login")} disabled={loading}>
           Cancelar
         </button>
