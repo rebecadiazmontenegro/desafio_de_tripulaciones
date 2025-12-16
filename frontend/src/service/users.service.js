@@ -119,7 +119,7 @@ export const deleteUser = async (email, token) => {
   }
 };
 
-export const changePassword = async ({ currentPassword, newPassword }) => {
+export const changePassword = async ( currentPassword, newPassword ) => {
   const token = localStorage.getItem("token");
 
   try {
@@ -140,4 +140,17 @@ export const changePassword = async ({ currentPassword, newPassword }) => {
     console.error("Error en service changePassword:", error);
     return { ok: false, data: { message: "Error en el servidor" } };
   }
+};
+
+export const changePasswordFirstTime = async (email, currentPassword, newPassword) => {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/user/change/password/first/time`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ email, currentPassword, newPassword })
+  });
+  
+  const data = await response.json();
+  return { ok: response.ok, data };
 };

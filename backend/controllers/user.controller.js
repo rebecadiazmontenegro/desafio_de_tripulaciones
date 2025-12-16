@@ -271,55 +271,181 @@ const deleteUser = async (req, res) => {
 
 const changePasswordUnified = async (req, res) => {
   try {
-    const { currentPassword, newPassword } = req.body;
-    const userId = req.user.id; // usuario autenticado
-
+    const { currentPassword, newPassword, email } = req.body;
+    
     if (!newPassword) {
       return res.status(400).json({ message: "Nueva contraseña requerida." });
     }
 
-    const user = await usersModels.getUserByIdModel(userId);
+    let user;
+    let isAuthenticatedUser = false;
+
+    if (req.user && req.user.id) {
+      user = await usersModels.getUserByIdModel(req.user.id);
+      isAuthenticatedUser = true;
+    } 
+    else if (email) {
+      user = await usersModels.getUserByEmailModel(email);
+      isAuthenticatedUser = false;
+    } 
+    else {
+      return res.status(400).json({ 
+        message: "Se requiere autenticación o email para cambiar contraseña." 
+      });
+    }
+
     if (!user) {
       return res.status(404).json({ message: "Usuario no encontrado." });
     }
 
-    // Si el usuario tiene contraseña temporal activa
-    if (user.reset_password) {
-      if (!currentPassword) {
-        return res.status(400).json({ message: "Contraseña temporal requerida." });
-      }
-
-      const isTempMatch = await bcrypt.compare(currentPassword, user.password);
-      if (!isTempMatch) {
-        return res.status(401).json({ message: "Contraseña temporal incorrecta." });
-      }
-
-      // Todo correcto, se quita el semáforo de reset
-      user.reset_password = false;
-      user.reset_password_expires = null;
-    } else {
-      // Cambio de contraseña normal: verificar la actual
-      if (!currentPassword) {
-        return res.status(400).json({ message: "Contraseña actual requerida." });
-      }
-
-      const isCurrentMatch = await bcrypt.compare(currentPassword, user.password);
-      if (!isCurrentMatch) {
-        return res.status(401).json({ message: "Contraseña actual incorrecta." });
-      }
+    if (!currentPassword) {
+      return res.status(400).json({ 
+        message: user.reset_password 
+          ? "Contraseña temporal requerida." 
+          : "Contraseña actual requerida." 
+      });
     }
 
-    // Hashear y guardar la nueva contraseña
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    await usersModels.updatePasswordModel(user.email, hashedPassword, user.reset_password, user.reset_password_expires);
+    const isPasswordMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isPasswordMatch) {
+      return res.status(401).json({ 
+        message: user.reset_password 
+          ? "Contraseña temporal incorrecta." 
+          : "Contraseña actual incorrecta." 
+      });
+    }
 
-    return res.status(200).json({ message: "Contraseña actualizada correctamente." });
+    const isSamePassword = await bcrypt.compare(newPassword, user.password);
+    if (isSamePassword) {
+      return res.status(400).json({ 
+        message: "La nueva contraseña debe ser diferente a la actual." 
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    if (isAuthenticatedUser) {
+      // ⭐ AQUÍ ESTÁ EL CAMBIO: user.id en vez de user.email
+      await usersModels.updatePasswordNormalModel(user.id, hashedPassword);
+    } else {
+      await usersModels.updatePasswordModel(
+        user.email, 
+        hashedPassword, 
+        false,
+        null
+      );
+    }
+
+    return res.status(200).json({ 
+      message: "Contraseña actualizada correctamente.",
+      msg: "Contraseña actualizada correctamente.",
+      success: true 
+    });
 
   } catch (error) {
     console.error("Error cambiando contraseña:", error);
-    return res.status(500).json({ message: "Error del servidor." });
+    return res.status(500).json({ 
+      message: "Error del servidor.",
+      msg: "Error del servidor.",
+      error: error.message 
+    });
   }
 };
+
+const changePasswordFirstTime = async (req, res) => {
+  try {
+    const { email, currentPassword, newPassword } = req.body;
+
+    // 1. Validar que todos los campos estén presentes
+    if (!email || !currentPassword || !newPassword) {
+      return res.status(400).json({ 
+        message: "Email, contraseña temporal y nueva contraseña son requeridos.",
+        msg: "Faltan campos requeridos" 
+      });
+    }
+
+    // 2. Validar formato de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ 
+        message: "Formato de email inválido." 
+      });
+    }
+
+    // 3. Validar longitud de nueva contraseña
+    if (newPassword.length < 6) {
+      return res.status(400).json({ 
+        message: "La contraseña debe tener al menos 6 caracteres." 
+      });
+    }
+
+    // 4. Buscar usuario por email
+    const user = await usersModels.getUserByEmailModel(email);
+    
+    if (!user) {
+      return res.status(404).json({ 
+        message: "Usuario no encontrado.",
+        msg: "Usuario no encontrado" 
+      });
+    }
+
+    // 5. VALIDACIÓN CRÍTICA: Verificar que tenga contraseña temporal activa
+    if (!user.reset_password) {
+      return res.status(403).json({ 
+        message: "Este usuario no tiene una contraseña temporal activa. Usa el cambio de contraseña normal desde tu perfil.",
+        msg: "No tienes contraseña temporal" 
+      });
+    }
+
+    // 6. Verificar que la contraseña temporal sea correcta
+    const isTempPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    
+    if (!isTempPasswordValid) {
+      return res.status(401).json({ 
+        message: "La contraseña temporal es incorrecta.",
+        msg: "Contraseña temporal incorrecta" 
+      });
+    }
+
+    // 7. Verificar que la nueva contraseña sea diferente a la temporal
+    const isSamePassword = await bcrypt.compare(newPassword, user.password);
+    if (isSamePassword) {
+      return res.status(400).json({ 
+        message: "La nueva contraseña debe ser diferente a la contraseña temporal.",
+        msg: "La contraseña debe ser diferente" 
+      });
+    }
+
+    // 8. Hashear la nueva contraseña
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // 9. Actualizar contraseña y QUITAR el flag de reset
+    await usersModels.updatePasswordModel(
+      user.email, 
+      hashedPassword, 
+      false,  // reset_password = false
+      null    // reset_password_expires = null
+    );
+
+    // 10. Log de auditoría (importante para seguridad)
+    console.log(`[SECURITY] ✅ Primer cambio de contraseña exitoso - Email: ${email} - Timestamp: ${new Date().toISOString()}`);
+
+    return res.status(200).json({ 
+      message: "Contraseña actualizada correctamente. Por favor, inicia sesión con tu nueva contraseña.",
+      msg: "Contraseña actualizada correctamente",
+      success: true 
+    });
+
+  } catch (error) {
+    console.error("[ERROR] ❌ Error en primer cambio de contraseña:", error);
+    return res.status(500).json({ 
+      message: "Error del servidor al cambiar contraseña.",
+      msg: "Error del servidor",
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
 
 
 // const changePassword = async (req, res) => {
@@ -414,5 +540,6 @@ module.exports = {
   getAllWorkers,
   // changePassword,
   // updatePassword
-  changePasswordUnified
+  changePasswordUnified,
+  changePasswordFirstTime
 };
