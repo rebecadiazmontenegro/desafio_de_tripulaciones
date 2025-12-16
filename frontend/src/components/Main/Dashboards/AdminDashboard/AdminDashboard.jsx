@@ -46,7 +46,7 @@ const AdminDashboard = ({ userName }) => {
           <p>Registra nuevos usuarios en el sistema</p>
         </button>
    
-        <button className="guideButton" onClick={() => navigate("/guide")}>
+        <button className="guideButton" onClick={() => navigate("/guia")}>
           <Info size={28} />
           <h3>Guía de uso</h3>
         </button>
@@ -55,7 +55,7 @@ const AdminDashboard = ({ userName }) => {
       <article className="profileButtons">
         <button
           className="changePasswordButton"
-          onClick={() => navigate("/change-password")}
+          onClick={() => navigate("/change/password")}
         >
           <Key size={20} />
           <h4>Cambiar Contraseña</h4>

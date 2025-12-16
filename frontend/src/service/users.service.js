@@ -38,26 +38,26 @@ export const loginUser = async (email, password) => {
   }
 };
 
-export const changePassword = async (currentPassword, newPassword) => {
-  const token = localStorage.getItem("token");
+// export const changePassword = async (currentPassword, newPassword) => {
+//   const token = localStorage.getItem("token");
   
-  try {
-    const response = await fetch(`${API_URL}/user/change-password`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ currentPassword, newPassword }),
-    });
+//   try {
+//     const response = await fetch(`${API_URL}/user/change-password`, {
+//       method: "PUT",
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: `Bearer ${token}`,
+//       },
+//       body: JSON.stringify({ currentPassword, newPassword }),
+//     });
 
-    const data = await response.json();
-    return { ok: response.ok, data };
-  } catch (error) {
-    console.error("Error en service:", error);
-    return { ok: false, data: { message: "Error en el servidor" } };
-  }
-};
+//     const data = await response.json();
+//     return { ok: response.ok, data };
+//   } catch (error) {
+//     console.error("Error en service:", error);
+//     return { ok: false, data: { message: "Error en el servidor" } };
+//   }
+// };
 
 
 export const getManagers = async (token) => {
@@ -119,3 +119,25 @@ export const deleteUser = async (email, token) => {
   }
 };
 
+export const changePassword = async ({ currentPassword, newPassword }) => {
+  const token = localStorage.getItem("token");
+
+  try {
+    const response = await fetch(`${API_URL}/user/change/password`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ currentPassword, newPassword }),
+    });
+
+    const data = await response.json();
+
+    // La API ahora puede responder FORCED_PASSWORD_CHANGE o éxito
+    return { ok: response.ok, data };
+  } catch (error) {
+    console.error("Error en service changePassword:", error);
+    return { ok: false, data: { message: "Error en el servidor" } };
+  }
+};
