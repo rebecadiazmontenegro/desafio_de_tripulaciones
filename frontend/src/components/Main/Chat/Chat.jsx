@@ -183,9 +183,9 @@ const Chat = () => {
             filter: contrast(1.5) saturate(1.5) brightness(1.05) !important;
           }
           
-          .csv-download-btn {
-            display: none !important;
-          }
+         .downloadCSVButton {
+          display: none !important;
+        }
         `;
         clonedDoc.head.appendChild(style);
 
