@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import ChartRenderer from "./ChartRenderer/ChartRenderer";
-import { sendChatQuery } from "../../../service/chat.service";
+import { sendChatQuery, getMessages } from "../../../service/chat.service";
 
 const Chat = () => {
   const [messages, setMessages] = useState([]);
@@ -9,6 +9,26 @@ const Chat = () => {
   const [userContext, setUserContext] = useState({});
   const messagesEndRef = useRef(null);
 
+  // Desempaquetamos JSON del Bot
+  const parseMessage = (content) => {
+    try {
+      const parsed = JSON.parse(content);
+      // Si los Datos son del Bot Devuelve el objeto limpio
+      if(parsed && (parsed.type === 'data' || parsed.type === 'chart' || parsed.data)) {
+        return parsed;
+      }
+
+      // Si se pudo parsear pero no es válida, devuelve null
+      return null;
+
+    }catch (e) {
+      console.log(e)
+      // Es texto normal
+      return null; 
+    }
+  }
+
+  // Efecto de Carga Inicial
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     const user = storedUser ? JSON.parse(storedUser) : {};
@@ -26,12 +46,55 @@ const Chat = () => {
         }. Soy el Chatbot interno. ¿En qué puedo ayudarte${departamentoText}?`,
       },
     ]);
+
+  // Función para pedir historial al Back
+  const loadHistory = async () => {
+    try {
+      const history = await getMessages();
+      
+      // Traducir formatos
+      const formatTranslation = history.map(dbMsg => {
+        // Si es un JSON recoge la información, sino será null
+        const data = parseMessage(dbMsg.message);
+
+        // "Plan B" Si luego resulta que no es tabla ni gráfica, al menos tenemos texto para mostrar / Por defecto Texto Normal
+        let botText = dbMsg.message;
+
+        if(dbMsg.rol === 'bot'){
+          if (data?.type === "data") {
+            botText = `He encontrado ${data.data.rows.length} resultados.`;
+          } else if (data?.type === "chart") {
+            botText = `He generado un gráfico de tipo ${data.chart_type}.`;
+          } else {
+            botText = "Respuesta procesada.";
+          }
+      }
+  
+        return {
+          // user o bot
+          sender: dbMsg.rol,
+          // Texto generado arriba
+          text: botText,
+          payload: data
+        };
+      });
+
+      // Guardamos en el estado, Bienvenida e Historial Antiguo
+      setMessages(b => [...b, ...formatTranslation ]);
+    } catch (error) {
+            console.error("No se pudo cargar el historial", error);
+        }
+      }
+    loadHistory();
   }, []);
 
+
+    // Scroll Automático
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // Enviar Mensaje
   const handleSend = async (e) => {
     e.preventDefault();
     if (input.trim() === "" || loading) return;
@@ -45,13 +108,18 @@ const Chat = () => {
     try {
       const data = await sendChatQuery(userMessage);
 
+      const payload = parseMessage(data.message);
+      // Si payload existe, usamos ese para la lógica. Sino, usamos data directo
+      const finalData = payload || data;
+
       let botText = "";
-      if (data.type === "data") {
-        botText = `He encontrado ${data.data.rows.length} resultados.`;
-      } else if (data.type === "chart") {
-        botText = `He generado un gráfico de tipo ${data.chart_type}.`;
+      if (finalData.type === "data") {
+        botText = `He encontrado ${finalData.data.rows.length} resultados.`;
+      } else if (finalData.type === "chart") {
+        botText = `He generado un gráfico de tipo ${finalData.chart_type}.`;
       } else {
-        botText = "No he podido interpretar la respuesta.";
+        // Si no es JSON complejo, es un mensaje de texto normal
+        botText = finalData.message || "No he podido interpretar la respuesta.";
       }
 
       setMessages((prev) => [
@@ -59,7 +127,8 @@ const Chat = () => {
         {
           sender: "bot",
           text: botText,
-          payload: data,
+          // Guardamos los datos para pintar la gráfica
+          payload: finalData,
         },
       ]);
     } catch (error) {
