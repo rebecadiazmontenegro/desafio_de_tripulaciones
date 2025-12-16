@@ -34,6 +34,7 @@ const ChartRenderer = ({ payload }) => {
     promedio_importe_total: "Promedio importe total",
     total_cantidad: "Cantidad total",
     pais: "País",
+    conteo_transacciones: "Conteo de transacciones",
   };
 
   // Labels

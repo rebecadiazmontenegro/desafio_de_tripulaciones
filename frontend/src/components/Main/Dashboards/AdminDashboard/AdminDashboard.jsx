@@ -1,6 +1,13 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { UserPlus, Users, MessageCircle, Key, LogOut, Info } from "lucide-react";
+import {
+  UserPlus,
+  Users,
+  MessageCircle,
+  Key,
+  LogOut,
+  Info,
+} from "lucide-react";
 
 const AdminDashboard = ({ userName }) => {
   const navigate = useNavigate();
@@ -20,7 +27,6 @@ const AdminDashboard = ({ userName }) => {
       </article>
 
       <article className="cardButtons">
-
         <button onClick={() => navigate("/users/list")}>
           <Users size={50} />
           <h3>Ver Usuarios</h3>
@@ -33,26 +39,21 @@ const AdminDashboard = ({ userName }) => {
           <p>Administra los proyectos activos</p>
         </button>
       </article>
-        <article>
+      <aside className="createManagerButton">
         <button onClick={() => navigate("/signup")}>
           <UserPlus size={50} />
           <h3>Crear Manager</h3>
           <p>Registra nuevos usuarios en el sistema</p>
-          </button>
-      </article>
-      <article>
-        <button onClick={() => navigate("/change-password")}>
-           <Key size={24} />
-          <h3>Cambiar Contraseña</h3>
         </button>
-          <button className="guideButton" onClick={() => navigate("/guide")}>
-            <Info size={28} />
-            <h3>Guía de uso</h3>
-          </button>
-      </article>
+   
+        <button className="guideButton" onClick={() => navigate("/guide")}>
+          <Info size={28} />
+          <h3>Guía de uso</h3>
+        </button>
+      </aside>
 
       <article className="profileButtons">
-        <button 
+        <button
           className="changePasswordButton"
           onClick={() => navigate("/change-password")}
         >
