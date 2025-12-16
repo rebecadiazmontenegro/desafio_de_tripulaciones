@@ -27,10 +27,8 @@ const loginUser = async (req, res) => {
       const lockDate = new Date(user.bloqueado_hasta);
 
       if (now < lockDate) {
-        const diffMs = lockDate - now;
-        const diffMins = Math.ceil(diffMs / 60000);
         return res.status(429).json({ 
-          message: `Cuenta bloqueada temporalmente. Inténtalo de nuevo en ${diffMins} minutos.` 
+          message: "Cuenta bloqueada temporalmente." 
         });
       }
     }
@@ -47,7 +45,7 @@ const loginUser = async (req, res) => {
       if (currentAttempts >= 5) {
         const blockMinutes = 5; // Tiempo de bloqueo
         lockUntil = new Date(Date.now() + blockMinutes * 60000); 
-        errorMsg = `Has excedido el límite de intentos. Cuenta bloqueada por ${blockMinutes} minutos.`;
+        errorMsg = "Has excedido el numero de intentos. Cuenta bloqueada temporalmente.";
       }
 
       // Guardamos el fallo en BD
