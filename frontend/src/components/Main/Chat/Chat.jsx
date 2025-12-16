@@ -25,15 +25,12 @@ const Chat = () => {
       try {
         const payload = JSON.parse(atob(token.split(".")[1]));
 
-        // 👉 aquí decides quién puede usar el chat
-        // ejemplo: todos los usuarios logeados
         if (payload) {
           setIsAuthorized(true);
         } else {
           setIsAuthorized(false);
         }
 
-        // contexto de usuario
         const storedUser = localStorage.getItem("user");
         const user = storedUser ? JSON.parse(storedUser) : {};
         setUserContext(user);
@@ -104,12 +101,9 @@ const Chat = () => {
     }
   };
 
-  // ⏳ mientras valida el token
   if (isAuthorized === null) {
     return <p>Verificando permisos...</p>;
   }
-
-  // 🚫 si no está autorizado
   if (isAuthorized === false) {
     return (
       <div>
@@ -164,7 +158,9 @@ const Chat = () => {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder={loading ? "Esperando respuesta..." : "Escribe tu pregunta..."}
+          placeholder={
+            loading ? "Esperando respuesta..." : "Escribe tu pregunta..."
+          }
           disabled={loading}
         />
         <button type="submit" disabled={loading}>
