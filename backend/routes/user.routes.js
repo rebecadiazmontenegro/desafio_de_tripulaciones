@@ -3,6 +3,8 @@ const router = express.Router();
 const usersController = require("../controllers/user.controller");
 const jwt = require("jsonwebtoken");
 const authMiddleware = require("../middlewares/authMiddleware");
+const optionalAuthMiddleware = require("../middlewares/optionalauthMiddleware");
+
 const {
   validateCreateUser,
   validateLoginUser,
@@ -44,6 +46,8 @@ router.delete("/:email", authMiddleware, usersController.deleteUser);
 
 // router.put("/change-password", usersController.updatePassword);
 router.put("/change/password", authMiddleware, usersController.changePasswordUnified);
+router.put("/change/password/first/time", usersController.changePasswordFirstTime);
 
+router.post("/forgot-password", usersController.forgotPassword);
 
 module.exports = router;

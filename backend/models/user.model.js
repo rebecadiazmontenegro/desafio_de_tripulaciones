@@ -92,19 +92,19 @@ const deleteUserByEmail = async (email) => {
   }
 };
 
-const getUserByIdModel = async (id) => {
-  const client = await pool.connect();
-  try {
-    const query = "SELECT * FROM users WHERE id = $1";
-    const result = await client.query(query, [id]);
-    return result.rows[0];
-  } catch (error) {
-    console.error("Error en getUserByIdModel:", error);
-    throw error;
-  } finally {
-    client.release();
-  }
-};
+// const getUserByIdModel = async (id) => {
+//   const client = await pool.connect();
+//   try {
+//     const query = "SELECT * FROM users WHERE id = $1";
+//     const result = await client.query(query, [id]);
+//     return result.rows[0];
+//   } catch (error) {
+//     console.error("Error en getUserByIdModel:", error);
+//     throw error;
+//   } finally {
+//     client.release();
+//   }
+// };
 
 // const updatePasswordModel = async (userId, hashedPassword) => {
 //   const client = await pool.connect();
@@ -143,24 +143,114 @@ const updateLoginAttemptsModel = async (userId, attempts, lockUntil) => {
   }
 };
 
-const updatePasswordModel = async (email, hashedPassword, resetPassword = false, resetExpires = null) => {
+// const updatePasswordModel = async (email, hashedPassword, resetPassword = false, resetExpires = null) => {
+//   try {
+//     const query = `
+//       UPDATE users
+//       SET password = $1,
+//           reset_password = $2,
+//           reset_password_expires = $3
+//       WHERE email = $4
+//       RETURNING id, nombre, apellidos, email;
+//     `;
+
+//     const values = [hashedPassword, resetPassword, resetExpires, email];
+
+//     const result = await pool.query(query, values);
+//     return result.rows[0]; // Devuelve el usuario actualizado
+//   } catch (error) {
+//     console.error("Error en updatePasswordModel:", error);
+//     throw new Error("Error actualizando la contraseña.");
+//   }
+// };
+
+////////////////////
+
+
+const getUserByIdModel = async (userId) => {
+  let client;
   try {
+    client = await pool.connect(); // ✅ Usar pool
     const query = `
-      UPDATE users
-      SET password = $1,
-          reset_password = $2,
+      SELECT id, nombre, apellidos, email, password, rol, departamento, 
+             reset_password, reset_password_expires
+      FROM users
+      WHERE id = $1
+    `;
+    const result = await client.query(query, [userId]);
+    return result.rows[0] || null;
+  } catch (error) {
+    console.error("Error en getUserByIdModel:", error);
+    throw error;
+  } finally {
+    if (client) client.release();
+  }
+};
+
+const getUserByEmailModel = async (email) => {
+  let client;
+  try {
+    client = await pool.connect(); // ✅ Usar pool
+    const query = `
+      SELECT id, nombre, apellidos, email, password, rol, departamento, 
+             reset_password, reset_password_expires
+      FROM users 
+      WHERE email = $1
+    `;
+    const result = await client.query(query, [email]);
+    return result.rows[0] || null;
+  } catch (error) {
+    console.error("Error en getUserByEmailModel:", error);
+    throw error;
+  } finally {
+    if (client) client.release();
+  }
+};
+
+const updatePasswordModel = async (email, hashedPassword, resetPassword, resetPasswordExpires) => {
+  let client;
+  try {
+    client = await pool.connect(); // ✅ Usar pool
+    const query = `
+      UPDATE users 
+      SET password = $1, 
+          reset_password = $2, 
           reset_password_expires = $3
       WHERE email = $4
-      RETURNING id, nombre, apellidos, email;
+      RETURNING id, email, nombre
     `;
-
-    const values = [hashedPassword, resetPassword, resetExpires, email];
-
-    const result = await pool.query(query, values);
-    return result.rows[0]; // Devuelve el usuario actualizado
+    const result = await client.query(query, [
+      hashedPassword, 
+      resetPassword, 
+      resetPasswordExpires, 
+      email
+    ]);
+    return result.rows[0] || null;
   } catch (error) {
     console.error("Error en updatePasswordModel:", error);
-    throw new Error("Error actualizando la contraseña.");
+    throw error;
+  } finally {
+    if (client) client.release();
+  }
+};
+
+const updatePasswordNormalModel = async (userId, hashedPassword) => {
+  let client;
+  try {
+    client = await pool.connect();
+    const query = `
+      UPDATE users 
+      SET password = $1
+      WHERE id = $2
+      RETURNING id, email, nombre
+    `;
+    const result = await client.query(query, [hashedPassword, userId]);
+    return result.rows[0] || null;
+  } catch (error) {
+    console.error("Error en updatePasswordNormalModel:", error);
+    throw error;
+  } finally {
+    if (client) client.release();
   }
 };
 
@@ -172,5 +262,7 @@ module.exports = {
   deleteUserByEmail,
   getUserByIdModel,
   updatePasswordModel,
-  updateLoginAttemptsModel
+  updateLoginAttemptsModel,
+  getUserByEmailModel,
+  updatePasswordNormalModel
 };
