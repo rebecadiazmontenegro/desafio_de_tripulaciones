@@ -34,33 +34,33 @@ const LoginForm = () => {
       const { ok, data } = await loginUser(formData.email, formData.password);
 
       if (ok) {
-        if(data.action === "FORCE_PASSWORD_CHANGE") {
-          navigate("/change-password", {
-            state: { email: data.user.email }
+        if (data.action === "FORCE_PASSWORD_CHANGE") {
+          console.log("Usuario con contraseña temporal detectado");
+
+          if (data.token) {
+            localStorage.setItem("token", data.token);
+          }
+
+          navigate("/change/password", {
+            state: {
+              email: data.user?.email || formData.email,
+              tempPassword: formData.password,
+              isTemporaryPassword: true,
+            },
           });
           return;
         }
 
         localStorage.setItem("token", data.token);
-
-        if (data.action === "FORCE_PASSWORD_CHANGE") {
-          navigate("/change/password", { replace: true });
-          return;
-        }
-
         localStorage.setItem("user", JSON.stringify(data.user));
 
-        if (data.user.rol === "admin" || data.user.rol === "manager") {
-          navigate("/dashboard", { replace: true });
-        } else {
-          navigate("/dashboard", { replace: true });
-        }
+        navigate("/dashboard", { replace: true });
       } else {
         setError(data.message || "Error en el login");
       }
     } catch (err) {
       setError("Error inesperado. Intenta de nuevo.");
-      console.log(err);
+      console.error("Error en login:", err);
     } finally {
       setLoading(false);
     }
@@ -68,7 +68,6 @@ const LoginForm = () => {
 
   return (
     <section className="loginContainer">
-      
       <article className="loginHeader">
         <h1>Iniciar Sesión</h1>
         <p>Ingresa tus credenciales para continuar</p>
@@ -76,7 +75,7 @@ const LoginForm = () => {
 
       <form className="loginForm">
         {error && <div className="loginError">{error}</div>}
-        
+
         <label htmlFor="email">Email</label>
         <input
           type="email"
@@ -87,7 +86,7 @@ const LoginForm = () => {
           placeholder="Introduce tu correo"
           disabled={loading}
         />
-        
+
         <label htmlFor="password">Contraseña</label>
         <input
           type="password"
@@ -99,17 +98,17 @@ const LoginForm = () => {
           disabled={loading}
         />
 
-        <button 
-            className="loginButton" 
-            onClick={handleSubmit} 
-            disabled={loading}
+        <button
+          className="loginButton"
+          onClick={handleSubmit}
+          disabled={loading}
         >
           {loading ? "Iniciando sesión..." : "Iniciar Sesión"}
         </button>
 
         <button
           className="forgotButton"
-          onClick={() => navigate("/forgot/password")}
+          onClick={() => navigate("/forgot-password")}
           disabled={loading}
           type="button"
         >
