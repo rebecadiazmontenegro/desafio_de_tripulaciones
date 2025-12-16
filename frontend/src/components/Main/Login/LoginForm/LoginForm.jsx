@@ -43,8 +43,6 @@ const LoginForm = () => {
 
         localStorage.setItem("token", data.token);
 
-        
-        // 🔹 Contraseña temporal: fuerza cambio
         if (data.action === "FORCE_PASSWORD_CHANGE") {
           navigate("/change/password", { replace: true });
           return;
@@ -71,10 +69,10 @@ const LoginForm = () => {
   return (
     <section className="loginContainer">
       
-      <div className="loginHeader">
+      <article className="loginHeader">
         <h1>Iniciar Sesión</h1>
         <p>Ingresa tus credenciales para continuar</p>
-      </div>
+      </article>
 
       <form className="loginForm">
         {error && <div className="loginError">{error}</div>}

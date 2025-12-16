@@ -86,17 +86,17 @@ const ChangePassword = () => {
   };
 
   return (
-    <section>
+    <section className="changePassword">
       <article>
-        <h1>Cambiar Contraseña</h1>
+        <h1>Cambiar contraseña</h1>
         <p>Actualiza tu contraseña por una más segura</p>
       </article>
 
-      <article>
-        {error && <div><p style={{ color: "red" }}>{error}</p></div>}
-        {success && <div><p style={{ color: "green" }}>{success}</p></div>}
+      <form className="changePasswordCard">
+        {error && <div><p className="formMessageError" style={{ color: "red" }}>{error}</p></div>}
+        {success && <div><p className="formMessageError" style={{ color: "green" }}>{success}</p></div>}
 
-        <article>
+        <article className="formGroup">
           <label htmlFor="currentPassword">Contraseña Actual</label>
           <input
             type="password"
@@ -109,7 +109,7 @@ const ChangePassword = () => {
           />
         </article>
 
-        <article>
+        <article className="formGroup">
           <label htmlFor="newPassword">Nueva Contraseña</label>
           <input
             type="password"
@@ -122,7 +122,7 @@ const ChangePassword = () => {
           />
         </article>
 
-        <article>
+        <article className="formGroup">
           <label htmlFor="confirmPassword">Confirmar Nueva Contraseña</label>
           <input
             type="password"
@@ -134,14 +134,15 @@ const ChangePassword = () => {
             disabled={loading}
           />
         </article>
-
-        <button onClick={handleSubmit} disabled={loading}>
+        <article className="changePasswordButtons">
+        <button className="submitButton" onClick={handleSubmit} disabled={loading}>
           {loading ? "Cambiando..." : "Cambiar Contraseña"}
         </button>
-        <button onClick={() => navigate("/login")} disabled={loading}>
+        <button className="cancelButton" onClick={() => navigate("/login")} disabled={loading}>
           Cancelar
         </button>
-      </article>
+        </article>
+      </form>
     </section>
   );
 };
