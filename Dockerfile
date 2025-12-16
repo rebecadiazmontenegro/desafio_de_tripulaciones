@@ -1,25 +1,23 @@
 FROM node:20
 
-# Establecer el directorio de trabajo
+# Directorio de trabajo
 WORKDIR /app
 
-# Copiar todos los archivos del proyecto
+# Copia todo el proyecto
 COPY . .
 
-# Instalar dependencias del package.json principal
-RUN npm install
+# Instalar dependencias del backend
+RUN npm install --prefix backend
 
-# Instalar dependencias del proyecto tanto backend como frontend
-RUN npm run install
+# Instalar dependencias del frontend
+RUN npm install --prefix frontend
 
-# Construir el frontend usando el comando  del package.json principal
-RUN npm run build
+# Construir frontend
+RUN npm run build --prefix frontend
 
-# Exponer el puerto del backend
+# Configuración de producción
+ENV NODE_ENV=production
 EXPOSE 3000
 
-# Establecer las variables de entorno en tiempo de ejecución
-ENV NODE_ENV=production
-
-# Comando para iniciar el proyecto completo
-CMD ["npm", "start"]
+# Comando para iniciar el backend
+CMD ["npm", "start", "--prefix", "backend"]
