@@ -49,7 +49,7 @@ const ManagerDashboard = ({ userName }) => {
             <h3>Crear Worker</h3>
             <p>Registra nuevos usuarios en el sistema</p>
           </button>
-          <button className="guideButton" onClick={() => navigate("/guide")}>
+          <button className="guideButton" onClick={() => navigate("/guia")}>
             <Info size={28} />
             <h3>Guía de uso</h3>
           </button>

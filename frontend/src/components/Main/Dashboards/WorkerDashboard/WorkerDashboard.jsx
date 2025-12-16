@@ -26,7 +26,7 @@ const WorkerDashboard = ({ userName }) => {
           <h3>Chat</h3>
           <p>Visualiza y completa tus tareas</p>
         </button>
-        <button className="guideButton" onClick={() => navigate("/guide")}>
+        <button className="guideButton" onClick={() => navigate("/guia")}>
           <Info size={28} />
           <h3>Guía de uso</h3>
         </button>
