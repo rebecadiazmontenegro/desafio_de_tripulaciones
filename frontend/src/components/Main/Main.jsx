@@ -8,6 +8,8 @@ import ChangePassword from './ChangePassword/ChangePassword'
 import UsersList from './UsersList/UsersList'
 import Chat from "./Chat/Chat";
 import GuiaChatbotSQL from "./Guia/Guia";
+import ForgotPassword from "./ForgotPassword/ForgotPassword";
+
 
 
 const Main = () => {
@@ -21,6 +23,7 @@ const Main = () => {
         <Route path="/change/password" element={<ChangePassword />} />
         <Route path="/users/list" element={<UsersList />} />
         <Route path="/guia" element={<GuiaChatbotSQL />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
 
       </Routes>
     </main>;

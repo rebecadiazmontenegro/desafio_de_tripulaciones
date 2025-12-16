@@ -446,7 +446,66 @@ const changePasswordFirstTime = async (req, res) => {
   }
 };
 
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
 
+    if (!email) {
+      return res.status(400).json({ 
+        message: "El email es requerido" 
+      });
+    }
+
+    // Buscar usuario
+    const user = await usersModels.getUserModel(email);
+    
+    if (!user) {
+      // Por seguridad, no revelamos si el email existe o no
+      return res.status(200).json({ 
+        message: "Si el email existe, recibirás un enlace para restablecer tu contraseña",
+        msg: "Email enviado si existe"
+      });
+    }
+
+    // Generar contraseña temporal
+    const tempPassword = crypto.randomBytes(4).toString('hex');
+    const hashedPassword = await bcrypt.hash(tempPassword, 10);
+    
+    // 30 minutos de expiración
+    const passwordExpiration = new Date(Date.now() + 30 * 60 * 1000);
+
+    // Actualizar en BD
+    await usersModels.updatePasswordModel(
+      email,
+      hashedPassword,
+      true, // reset_password = true
+      passwordExpiration
+    );
+
+    // Enviar email con la contraseña temporal
+    const emailSent = await changePassword(email, user.nombre, tempPassword);
+
+    if (!emailSent) {
+      return res.status(500).json({ 
+        message: "Error al enviar el email. Intenta de nuevo más tarde" 
+      });
+    }
+
+    console.log(`[SECURITY] 🔐 Contraseña temporal generada - Email: ${email}`);
+
+    return res.status(200).json({ 
+      message: "Se ha enviado un email con instrucciones para restablecer tu contraseña",
+      msg: "Email enviado correctamente"
+    });
+
+  } catch (error) {
+    console.error("[ERROR] Error en forgotPassword:", error);
+    return res.status(500).json({ 
+      message: "Error del servidor",
+      error: error.message 
+    });
+  }
+};
 
 // const changePassword = async (req, res) => {
 //   const errors = validationResult(req);
@@ -541,5 +600,6 @@ module.exports = {
   // changePassword,
   // updatePassword
   changePasswordUnified,
-  changePasswordFirstTime
+  changePasswordFirstTime,
+  forgotPassword
 };

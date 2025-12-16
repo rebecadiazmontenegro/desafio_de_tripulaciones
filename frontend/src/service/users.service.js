@@ -154,3 +154,24 @@ export const changePasswordFirstTime = async (email, currentPassword, newPasswor
   const data = await response.json();
   return { ok: response.ok, data };
 };
+
+export const forgotPassword = async (email) => {
+  try {
+    const response = await fetch(`${API_URL}/user/forgot-password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    const data = await response.json();
+    return { ok: response.ok, data };
+  } catch (error) {
+    console.error("Error en forgotPassword:", error);
+    return { 
+      ok: false, 
+      data: { message: "Error en el servidor" } 
+    };
+  }
+};

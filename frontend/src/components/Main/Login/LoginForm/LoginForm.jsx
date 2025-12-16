@@ -117,7 +117,7 @@ const LoginForm = () => {
 
         <button
           className="forgotButton"
-          onClick={() => navigate("/forgot/password")}
+          onClick={() => navigate("/forgot-password")}
           disabled={loading}
           type="button"
         >
