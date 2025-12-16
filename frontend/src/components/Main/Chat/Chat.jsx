@@ -2,7 +2,14 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import ChartRenderer from "./ChartRenderer/ChartRenderer";
 import { sendChatQuery } from "../../../service/chat.service";
-import { Download, FileText, BarChart2, Send, ArrowLeft } from "lucide-react";
+import {
+  Download,
+  FileText,
+  BarChart2,
+  Send,
+  ArrowLeft,
+  Info,
+} from "lucide-react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
@@ -253,12 +260,15 @@ const Chat = () => {
   return (
     <section>
       <h1>Tu chatbot</h1>
-      <button
-      className="backButton"
-        onClick={() => navigate(-1)}
-      >
-        <ArrowLeft size={16} /> Volver
-      </button>
+      <article className="actionButtons">
+        <button className="backButton" onClick={() => navigate(-1)}>
+          <ArrowLeft size={16} /> Volver
+        </button>
+        <button className="guideButton" onClick={() => navigate("/guia")}>
+          <Info size={28} />
+          Guía de uso
+        </button>
+      </article>
       <article className="chatArea">
         <aside className="messagesWindow" ref={chatRef}>
           {messages.map((msg, index) => (
