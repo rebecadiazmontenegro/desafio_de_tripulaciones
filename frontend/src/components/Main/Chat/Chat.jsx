@@ -253,6 +253,12 @@ const Chat = () => {
   return (
     <section>
       <h1>Tu chatbot</h1>
+      <button
+      className="backButton"
+        onClick={() => navigate(-1)}
+      >
+        <ArrowLeft size={16} /> Volver
+      </button>
       <article className="chatArea">
         <aside className="messagesWindow" ref={chatRef}>
           {messages.map((msg, index) => (
@@ -264,7 +270,7 @@ const Chat = () => {
                 <div className="chartContainer">
                   <ChartRenderer payload={msg.payload} />
                   <button
-                    className="csv-download-btn"
+                    className="downloadCSVButton"
                     onClick={() => handleDownloadChartCSV(msg.payload)}
                   >
                     <BarChart2 size={16} /> Descargar datos CSV
@@ -312,7 +318,7 @@ const Chat = () => {
                     </tbody>
                   </table>
                   <button
-                    className="csv-download-btn"
+                    className="downloadCSVButton"
                     onClick={() =>
                       handleDownloadCSV(msg.payload.data, "tabla_datos.csv")
                     }
@@ -337,7 +343,7 @@ const Chat = () => {
             disabled={loading}
           />
           <div className="chatButtons">
-            <button type="submit" disabled={loading}>
+            <button className="sendButton" type="submit" disabled={loading}>
               {loading ? (
                 "..."
               ) : (
@@ -346,18 +352,12 @@ const Chat = () => {
                 </>
               )}
             </button>
-            <button onClick={handleDownloadPDF}>
+            <button className="downloadPDFButton" onClick={handleDownloadPDF}>
               <Download size={16} /> Descargar chat en PDF
             </button>
           </div>
         </form>
       </article>
-
-      <button
-        onClick={() => navigate(-1)}
-      >
-        <ArrowLeft size={16} /> Volver
-      </button>
     </section>
   );
 };

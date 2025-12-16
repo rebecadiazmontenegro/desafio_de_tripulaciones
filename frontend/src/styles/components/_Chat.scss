@@ -1,3 +1,8 @@
+h1 {
+  font-size: 70px;
+  margin-bottom: 16px;
+
+}
 .chatArea {
   display: flex;
   flex-direction: column;
@@ -6,7 +11,7 @@
   align-items: center;
   max-width: 900px;
   margin: 40px auto;
-   background-color: rgba(255, 255, 255, 0.7);
+  background-color: rgba(255, 255, 255, 0.7);
   border-radius: 24px;
   border: 2px solid var(--white);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
@@ -70,7 +75,6 @@
 }
 
 .inputArea input[type="text"] {
-
   flex-grow: 1;
   width: 80%;
   padding: 14px 22px;
@@ -84,6 +88,103 @@
     border-color: var(--color-primary);
     box-shadow: 0 0 0 3px rgba(66, 105, 210, 0.2);
   }
+}
+
+.chatButtons {
+  display: flex;
+  flex-direction: column;
+  justify-self: center;
+  gap: 16px;
+}
+
+.sendButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background-color: var(--dark);
+  color: var(--white);
+  border: 2px solid var(--white);
+  border-radius: 30px;
+  padding: 12px 24px;
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.sendButton:hover{
+  background-color: var(--white);
+  color: var(--dark);
+}
+
+.sendButton:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 6px 15px rgba(6, 18, 48, 0.2);
+}
+
+.sendButton:disabled {
+  background-color: rgba(100, 100, 100, 0.4);
+  cursor: not-allowed;
+}
+
+.downloadPDFButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #4caf50;
+  color: #ffffff;
+  border: none;
+  border-radius: 30px;
+  padding: 12px 22px;
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.downloadPDFButton:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.downloadCSVButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #2196f3;
+  color: #ffffff;
+  border: none;
+  border-radius: 30px;
+  padding: 8px 16px;
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  font-size: 0.85em;
+  transition: all 0.3s ease;
+  margin-top: 8px;
+}
+
+.downloadCSVButton:hover {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: var(--white);
+  color: var(--dark);
+  border: none;
+  border-radius: 24px;
+  padding: 10px 20px;
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  margin: 0px auto;
+  transition: all 0.3s ease;
+}
+
+.backButton:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 6px 15px rgba(6, 18, 48, 0.3);
 }
 
 .submitButton {
@@ -131,7 +232,7 @@
   background-color: rgba(66, 105, 210, 0.05);
 }
 
-/* Animaciones */
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -154,8 +255,43 @@
   }
 }
 
-@media (min-width: 1024px) and (max-width: 1440px) {
+@media (min-width: 1024px) {
+  .chatArea {
+    width: 1600px; 
+    height: 600px; 
+  }
+
   .message-item {
-  max-width: 70%;
-}
+    max-width: 85%;     
+    padding: 35px 28px;  
+    font-size: 1.15em;
+  }
+
+  .inputArea {
+    padding: 25px 40px; 
+    width: 100%;
+  }
+
+  h1 {
+    font-size: 80px;
+  }
+
+  .chatButtons {
+    flex-direction: row;
+    gap: 20px;
+    flex-wrap: wrap;      
+  }
+
+  .sendButton,
+  .downloadPDFButton,
+  .downloadCSVButton {
+    font-size: 1em;
+
+  }
+
+  .downloadCSVButton {
+    font-size: 16px;
+    padding: 8px 28px;  
+    margin-top: 20px;
+  }
 }
