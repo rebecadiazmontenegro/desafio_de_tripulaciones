@@ -4,12 +4,12 @@ import ChartRenderer from "./ChartRenderer/ChartRenderer";
 import { sendChatQuery } from "../../../service/chat.service";
 
 const Chat = () => {
-  const navigate = useNavigate();
   const [isAuthorized, setIsAuthorized] = useState(null);
 
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
   const [userContext, setUserContext] = useState({});
   const messagesEndRef = useRef(null);
 
@@ -115,68 +115,87 @@ const Chat = () => {
   }
 
   return (
-    <div className="chat-area">
-      <div className="messages-window">
-        {messages.map((msg, index) => (
-          <div key={index} className={`message-item ${msg.sender}`}>
-            <strong>{msg.sender === "user" ? "Tú:" : "Bot:"}</strong>
-            <span> {msg.text}</span>
+    <section>
+      <h1>Tu chatbot</h1>
+      <article className="chatArea">
+        <aside className="messagesWindow">
+          {messages.map((msg, index) => (
+            <div key={index} className={`message-item ${msg.sender}`}>
+              <strong>{msg.sender === "user" ? "Tú:" : "Bot:"}</strong>
+              <span> {msg.text}</span>
 
-            {msg.sender === "bot" && msg.payload?.type === "chart" && (
-              <div className="chart-container">
-                <ChartRenderer payload={msg.payload} />
-              </div>
-            )}
+              {msg.sender === "bot" && msg.payload?.type === "chart" && (
+                <div className="chartContainer">
+                  <ChartRenderer payload={msg.payload} />
+                </div>
+              )}
 
-            {msg.sender === "bot" && msg.payload?.type === "data" && (
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    {msg.payload.data.columns.map((col, idx) => {
-                      const nombresHumanos = {
-                        date_trunc: "Fecha",
-                        max_importe_total: "Importe total máximo",
-                        total_importe_total: "Importe total",
-                        promedio_importe_total: "Promedio importe total",
-                        total_cantidad: "Cantidad total",
-                        pais: "País",
-                        conteo_transacciones: "Conteo de transacciones",
-                      };
-                      return <th key={idx}>{nombresHumanos[col] || col}</th>;
-                    })}
-                  </tr>
-                </thead>
-                <tbody>
-                  {msg.payload.data.rows.map((row, rIdx) => (
-                    <tr key={rIdx}>
-                      {row.map((cell, cIdx) => (
-                        <td key={cIdx}>{cell}</td>
-                      ))}
+              {msg.sender === "bot" && msg.payload?.type === "data" && (
+                <table className="dataTable">
+                  <thead>
+                    <tr>
+                      {msg.payload.data.columns.map((col, idx) => {
+                        const nombresHumanos = {
+                          date_trunc: "Fecha",
+                          max_importe_total: "Importe total máximo",
+                          total_importe_total: "Importe total",
+                          promedio_importe_total: "Promedio importe total",
+                          total_cantidad: "Cantidad total",
+                          pais: "País",
+                          conteo_transacciones: "Conteo de transacciones",
+                        };
+                        return <th key={idx}>{nombresHumanos[col] || col}</th>;
+                      })}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
-        ))}
-        <div ref={messagesEndRef} />
-      </div>
+                  </thead>
+                  <tbody>
+                    {msg.payload.data.rows.map((row, rIdx) => (
+                      <tr key={rIdx}>
+                        {row.map((cell, cIdx) => {
+                          const colName = msg.payload.data.columns[cIdx];
 
-      <form className="input-area" onSubmit={handleSend}>
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder={
-            loading ? "Esperando respuesta..." : "Escribe tu pregunta..."
-          }
-          disabled={loading}
-        />
-        <button type="submit" disabled={loading}>
-          {loading ? "..." : "Enviar"}
-        </button>
-      </form>
-    </div>
+                          if (colName === "date_trunc") {
+                            const fecha = new Date(cell);
+                            const dia = fecha
+                              .getUTCDate()
+                              .toString()
+                              .padStart(2, "0");
+                            const mes = (fecha.getUTCMonth() + 1)
+                              .toString()
+                              .padStart(2, "0");
+                            const año = fecha.getUTCFullYear();
+                            return <td key={cIdx}>{`${dia}/${mes}/${año}`}</td>;
+                          }
+
+                          return <td key={cIdx}>{cell}</td>;
+                        })}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          ))}
+          <div ref={messagesEndRef} />
+        </aside>
+
+        <form className="inputArea" onSubmit={handleSend}>
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder={
+              loading ? "Esperando respuesta..." : "Escribe tu pregunta..."
+            }
+            disabled={loading}
+          />
+          <button className="submitButton" type="submit" disabled={loading}>
+            {loading ? "..." : "Enviar"}
+          </button>
+        </form>
+      </article>
+      <button onClick={() => navigate(-1)}>Volver</button>
+    </section>
   );
 };
 

@@ -1,10 +1,23 @@
-// Fichero de estilos principal
-// Aqui poner todas las hojas de estilos que usara tu web. No hay que añadir el guion bajo (-) antes del nombre del fichero.
-// Porque SASS lo interpreta como un fichero parcial y no lo compila directamente a CSS.
+@use "./views/index";
+@use "./views/App";
 
-@use "./views/index.scss";
-@use "./views/App.scss";
+@use "./components/Header";
 
-@use "./components/Header.scss";
-@use "./components/LoginForm.scss";
-@use "./components/Chat.scss";
+@use "./components/Home";
+@use "./components/Graphics";
+
+@use "./components/Login";
+@use "./components/LoginForm";
+@use "./components/GraphicLogin";
+
+@use "./components/ManagerDashboard";
+@use "./components/WorkerDashBoard";
+@use "./components/AdminDashBoard";
+
+@use "./components/Chat";
+@use "./components/ChartRenderer";
+
+@use "./components/UsersList";
+@use "./components/UserCard";
+
+@use "./components/SignUpForm";
