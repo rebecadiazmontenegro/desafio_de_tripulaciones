@@ -15,7 +15,7 @@ const DescargarCSV = ({ data, columns, fileName = "datos_exportados.csv" }) => {
         display: "block",     
         marginTop: "10px",
         textAlign: "right",   
-        color: "#166534",     // Verde oscuro
+        color: "#166534",     
         fontWeight: "bold",
         textDecoration: "none",
         fontSize: "0.9rem",
