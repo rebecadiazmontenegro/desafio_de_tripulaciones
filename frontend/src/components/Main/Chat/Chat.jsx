@@ -132,9 +132,18 @@ const Chat = () => {
               <table className="data-table">
                 <thead>
                   <tr>
-                    {msg.payload.data.columns.map((col, idx) => (
-                      <th key={idx}>{col}</th>
-                    ))}
+                    {msg.payload.data.columns.map((col, idx) => {
+                      const nombresHumanos = {
+                        date_trunc: "Fecha",
+                        max_importe_total: "Importe total máximo",
+                        total_importe_total: "Importe total",
+                        promedio_importe_total: "Promedio importe total",
+                        total_cantidad: "Cantidad total",
+                        pais: "País",
+                        conteo_transacciones: "Conteo de transacciones",
+                      };
+                      return <th key={idx}>{nombresHumanos[col] || col}</th>;
+                    })}
                   </tr>
                 </thead>
                 <tbody>
