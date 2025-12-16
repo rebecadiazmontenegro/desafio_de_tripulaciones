@@ -32,11 +32,18 @@ const AdminDashboard = ({ userName }) => {
           <h3>Chat</h3>
           <p>Administra los proyectos activos</p>
         </button>
-        
+      </article>
+        <article>
         <button onClick={() => navigate("/signup")}>
           <UserPlus size={50} />
           <h3>Crear Manager</h3>
           <p>Registra nuevos usuarios en el sistema</p>
+          </button>
+      </article>
+      <article>
+        <button onClick={() => navigate("/change-password")}>
+           <Key size={24} />
+          <h3>Cambiar Contraseña</h3>
         </button>
           <button className="guideButton" onClick={() => navigate("/guide")}>
             <Info size={28} />
