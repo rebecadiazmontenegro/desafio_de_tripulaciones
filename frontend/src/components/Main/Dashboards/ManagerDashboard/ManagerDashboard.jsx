@@ -42,7 +42,7 @@ const ManagerDashboard = ({ userName }) => {
         </button>
       </article>
       <article>
-        <button onClick={() => navigate("/change/password")}>
+        <button onClick={() => navigate("/change-password")}>
           <Key size={24} />
           <h3>Cambiar Contraseña</h3>
         </button>
