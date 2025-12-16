@@ -1,8 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import ChartRenderer from "./ChartRenderer/ChartRenderer";
 import { sendChatQuery } from "../../../service/chat.service";
 
 const Chat = () => {
+  const navigate = useNavigate();
+  const [isAuthorized, setIsAuthorized] = useState(null);
+
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -10,23 +14,50 @@ const Chat = () => {
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    const user = storedUser ? JSON.parse(storedUser) : {};
-    setUserContext(user);
+    const checkAuthorization = () => {
+      const token = localStorage.getItem("token");
 
-    const departamentoText = user.departamento
-      ? ` con los datos de ${user.departamento.toUpperCase()}`
-      : "";
+      if (!token) {
+        navigate("/login", { replace: true });
+        return;
+      }
 
-    setMessages([
-      {
-        sender: "bot",
-        text: `Hola, ${
-          user.nombre ?? "Usuario"
-        }. Soy el Chatbot interno. ¿En qué puedo ayudarte${departamentoText}?`,
-      },
-    ]);
-  }, []);
+      try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+
+        // 👉 aquí decides quién puede usar el chat
+        // ejemplo: todos los usuarios logeados
+        if (payload) {
+          setIsAuthorized(true);
+        } else {
+          setIsAuthorized(false);
+        }
+
+        // contexto de usuario
+        const storedUser = localStorage.getItem("user");
+        const user = storedUser ? JSON.parse(storedUser) : {};
+        setUserContext(user);
+
+        const departamentoText = user.departamento
+          ? ` con los datos de ${user.departamento.toUpperCase()}`
+          : "";
+
+        setMessages([
+          {
+            sender: "bot",
+            text: `Hola, ${
+              user.nombre ?? "Usuario"
+            }. Soy el Chatbot interno. ¿En qué puedo ayudarte${departamentoText}?`,
+          },
+        ]);
+      } catch (error) {
+        console.error("Token inválido:", error);
+        navigate("/login", { replace: true });
+      }
+    };
+
+    checkAuthorization();
+  }, [navigate]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -73,6 +104,21 @@ const Chat = () => {
     }
   };
 
+  // ⏳ mientras valida el token
+  if (isAuthorized === null) {
+    return <p>Verificando permisos...</p>;
+  }
+
+  // 🚫 si no está autorizado
+  if (isAuthorized === false) {
+    return (
+      <div>
+        <h2>Acceso Denegado</h2>
+        <p>No tienes permisos para acceder al chat.</p>
+        <button onClick={() => navigate("/")}>Volver al inicio</button>
+      </div>
+    );
+  }
 
   return (
     <div className="chat-area">
@@ -82,58 +128,27 @@ const Chat = () => {
             <strong>{msg.sender === "user" ? "Tú:" : "Bot:"}</strong>
             <span> {msg.text}</span>
 
-            {/* Render de gráficos */}
             {msg.sender === "bot" && msg.payload?.type === "chart" && (
               <div className="chart-container">
                 <ChartRenderer payload={msg.payload} />
               </div>
             )}
 
-            {/* Render de datos en tabla */}
             {msg.sender === "bot" && msg.payload?.type === "data" && (
               <table className="data-table">
                 <thead>
                   <tr>
-                    {msg.payload.data.columns.map((col, idx) => {
-                      const nombresHumanos = {
-                        date_trunc: "Fecha",
-                        max_importe_total: "Importe total máximo",
-                        total_importe_total: "Importe total",
-                        promedio_importe_total: "Promedio importe total",
-                        total_cantidad: "Cantidad total",
-                        pais: "País",
-                        // agrega más alias si quieres
-                      };
-                      return <th key={idx}>{nombresHumanos[col] || col}</th>;
-                    })}
+                    {msg.payload.data.columns.map((col, idx) => (
+                      <th key={idx}>{col}</th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody>
                   {msg.payload.data.rows.map((row, rIdx) => (
                     <tr key={rIdx}>
-                      {row.map((cell, cIdx) => {
-                        const colName = msg.payload.data.columns[cIdx];
-
-                        if (colName === "date_trunc") {
-                          const fecha = new Date(cell);
-                          return (
-                            <td key={cIdx}>
-                              {`${fecha
-                                .getDate()
-                                .toString()
-                                .padStart(2, "0")}/${(fecha.getMonth() + 1)
-                                .toString()
-                                .padStart(2, "0")}/${fecha.getFullYear()}`}
-                            </td>
-                          );
-                        }
-
-                        if (typeof cell === "number") {
-                          return <td key={cIdx}>{cell.toFixed(2)}</td>;
-                        }
-
-                        return <td key={cIdx}>{cell}</td>;
-                      })}
+                      {row.map((cell, cIdx) => (
+                        <td key={cIdx}>{cell}</td>
+                      ))}
                     </tr>
                   ))}
                 </tbody>
@@ -149,9 +164,7 @@ const Chat = () => {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder={
-            loading ? "Esperando respuesta..." : "Escribe tu pregunta..."
-          }
+          placeholder={loading ? "Esperando respuesta..." : "Escribe tu pregunta..."}
           disabled={loading}
         />
         <button type="submit" disabled={loading}>
