@@ -72,7 +72,7 @@ const Chat = () => {
       return parseTableResponse(text);
     }
 
-    const hasNumberedList = /\d+\.\s\*\*/.test(text) || /\d+\.\s[A-Z]/.test(text);
+    const hasNumberedList = /^\d+\.\s/m.test(text);
     if (hasNumberedList) {
       return parseNumberedList(text);
     }
@@ -146,7 +146,7 @@ const Chat = () => {
       
       if (isListItem) {
         if (currentText.length > 0) {
-          result.push(<p key={`text-${idx}`}>{currentText.join(' ')}</p>);
+          result.push(<p key={`text-${idx}`}>{parseInlineMarkdown(currentText.join(' '))}</p>);
           currentText = [];
         }
         
@@ -157,11 +157,11 @@ const Chat = () => {
             <div key={idx} className="list-item">
               <span className="list-number">{num}.</span>
               <strong className="list-label">{label}:</strong>
-              <span className="list-value">{value}</span>
+              <span className="list-value">{parseInlineMarkdown(value)}</span>
             </div>
           );
         } else {
-          result.push(<p key={idx}>{line}</p>);
+          result.push(<p key={idx}>{parseInlineMarkdown(line)}</p>);
         }
       } else {
         currentText.push(line);
@@ -169,7 +169,7 @@ const Chat = () => {
     });
 
     if (currentText.length > 0) {
-      result.push(<p key="text-final">{currentText.join(' ')}</p>);
+      result.push(<p key="text-final">{parseInlineMarkdown(currentText.join(' '))}</p>);
     }
 
     return <div className="formatted-response">{result}</div>;
@@ -235,28 +235,84 @@ const Chat = () => {
   };
 
   const parseFormattedText = (text) => {
-    const paragraphs = text.split('\n\n');
-    
-    return (
-      <div className="formatted-text">
-        {paragraphs.map((paragraph, pIdx) => {
-          if (paragraph.trim().startsWith('*') && paragraph.includes('\n*')) {
-            const items = paragraph.split('\n').filter(line => line.trim().startsWith('*'));
-            return (
-              <ul key={pIdx} style={{ marginLeft: '20px', marginTop: '10px', marginBottom: '10px' }}>
-                {items.map((item, iIdx) => (
-                  <li key={iIdx} style={{ marginBottom: '5px' }}>
-                    {parseInlineMarkdown(item.replace(/^\*\s*/, ''))}
-                  </li>
-                ))}
-              </ul>
-            );
-          }
-          
-          return <p key={pIdx} style={{ marginBottom: '10px' }}>{parseInlineMarkdown(paragraph)}</p>;
-        })}
-      </div>
-    );
+    const lines = text.split('\n');
+    const result = [];
+    let currentParagraph = [];
+    let inBulletList = false;
+    let bulletItems = [];
+
+    lines.forEach((line, idx) => {
+      const trimmedLine = line.trim();
+      
+      // Detectar líneas con viñetas (asterisco o guión)
+      const isBullet = (trimmedLine.startsWith('*') && !trimmedLine.startsWith('**')) || 
+                       trimmedLine.startsWith('-');
+      
+      if (isBullet) {
+        if (currentParagraph.length > 0) {
+          result.push(
+            <p key={`p-${idx}`} style={{ marginBottom: '10px' }}>
+              {parseInlineMarkdown(currentParagraph.join(' '))}
+            </p>
+          );
+          currentParagraph = [];
+        }
+        
+        inBulletList = true;
+        bulletItems.push(trimmedLine.replace(/^[\*\-]\s*/, ''));
+      } else {
+        // Si había una lista de viñetas, renderizarla
+        if (inBulletList && bulletItems.length > 0) {
+          result.push(
+            <ul key={`ul-${idx}`} style={{ marginLeft: '20px', marginTop: '10px', marginBottom: '10px' }}>
+              {bulletItems.map((item, iIdx) => (
+                <li key={iIdx} style={{ marginBottom: '5px' }}>
+                  {parseInlineMarkdown(item)}
+                </li>
+              ))}
+            </ul>
+          );
+          bulletItems = [];
+          inBulletList = false;
+        }
+        
+        // Si la línea está vacía y hay un párrafo acumulado, renderizarlo
+        if (trimmedLine === '' && currentParagraph.length > 0) {
+          result.push(
+            <p key={`p-${idx}`} style={{ marginBottom: '10px' }}>
+              {parseInlineMarkdown(currentParagraph.join(' '))}
+            </p>
+          );
+          currentParagraph = [];
+        } else if (trimmedLine !== '') {
+          currentParagraph.push(line);
+        }
+      }
+    });
+
+    // Renderizar lista de viñetas pendiente
+    if (bulletItems.length > 0) {
+      result.push(
+        <ul key="ul-final" style={{ marginLeft: '20px', marginTop: '10px', marginBottom: '10px' }}>
+          {bulletItems.map((item, iIdx) => (
+            <li key={iIdx} style={{ marginBottom: '5px' }}>
+              {parseInlineMarkdown(item)}
+            </li>
+          ))}
+        </ul>
+      );
+    }
+
+    // Renderizar párrafo pendiente
+    if (currentParagraph.length > 0) {
+      result.push(
+        <p key="p-final" style={{ marginBottom: '10px' }}>
+          {parseInlineMarkdown(currentParagraph.join(' '))}
+        </p>
+      );
+    }
+
+    return <div className="formatted-text">{result}</div>;
   };
 
   const handleSend = async (e) => {
