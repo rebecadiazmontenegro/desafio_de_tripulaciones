@@ -63,6 +63,144 @@ const Chat = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // Función para formatear la respuesta del bot
+  const formatBotResponse = (text) => {
+    if (!text) return null;
+
+    // Detectar si contiene una tabla (patrón: | texto | texto |)
+    const hasTable = text.includes('|') && text.split('|').length > 5;
+    
+    if (hasTable) {
+      return parseTableResponse(text);
+    }
+
+    // Detectar listas numeradas
+    const hasNumberedList = /\d+\.\s\*\*/.test(text) || /\d+\.\s[A-Z]/.test(text);
+    if (hasNumberedList) {
+      return parseNumberedList(text);
+    }
+
+    // Formatear texto normal con negritas
+    return parseFormattedText(text);
+  };
+
+  // Parsear tablas en formato markdown
+  const parseTableResponse = (text) => {
+    const lines = text.split('\n').filter(line => line.trim());
+    
+    // Buscar el inicio de la tabla
+    const tableStart = lines.findIndex(line => line.includes('|') && line.split('|').length > 2);
+    if (tableStart === -1) return <span>{text}</span>;
+
+    const beforeTable = lines.slice(0, tableStart).join('\n');
+    const tableLines = lines.slice(tableStart);
+    
+    // Separar encabezado de filas
+    const headerLine = tableLines[0];
+    const separatorIndex = tableLines.findIndex(line => line.includes('---'));
+    const dataLines = tableLines.slice(separatorIndex + 1).filter(line => line.includes('|'));
+    
+    const headers = headerLine.split('|')
+      .map(h => h.trim())
+      .filter(h => h);
+    
+    const rows = dataLines.map(line => 
+      line.split('|')
+        .map(cell => cell.trim())
+        .filter(cell => cell)
+    );
+
+    // Texto después de la tabla
+    const afterTableIndex = tableStart + separatorIndex + 1 + dataLines.length;
+    const afterTable = lines.slice(afterTableIndex).join('\n');
+
+    return (
+      <div className="formatted-response">
+        {beforeTable && <p className="response-intro">{beforeTable}</p>}
+        
+        <div className="response-table-wrapper">
+          <table className="response-table">
+            <thead>
+              <tr>
+                {headers.map((header, idx) => (
+                  <th key={idx}>{header}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, rIdx) => (
+                <tr key={rIdx}>
+                  {row.map((cell, cIdx) => (
+                    <td key={cIdx}>{cell}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {afterTable && <p className="response-summary">{afterTable}</p>}
+      </div>
+    );
+  };
+
+  // Parsear listas numeradas con negritas
+  const parseNumberedList = (text) => {
+    const lines = text.split('\n');
+    const result = [];
+    let currentText = [];
+
+    lines.forEach((line, idx) => {
+      const isListItem = /^\d+\.\s/.test(line.trim());
+      
+      if (isListItem) {
+        if (currentText.length > 0) {
+          result.push(<p key={`text-${idx}`}>{currentText.join(' ')}</p>);
+          currentText = [];
+        }
+        
+        // Extraer número, texto y valor
+        const match = line.match(/^(\d+)\.\s\*\*(.+?)\*\*:?\s*(.+)$/);
+        if (match) {
+          const [, num, label, value] = match;
+          result.push(
+            <div key={idx} className="list-item">
+              <span className="list-number">{num}.</span>
+              <strong className="list-label">{label}:</strong>
+              <span className="list-value">{value}</span>
+            </div>
+          );
+        } else {
+          result.push(<p key={idx}>{line}</p>);
+        }
+      } else {
+        currentText.push(line);
+      }
+    });
+
+    if (currentText.length > 0) {
+      result.push(<p key="text-final">{currentText.join(' ')}</p>);
+    }
+
+    return <div className="formatted-response">{result}</div>;
+  };
+
+  // Parsear texto con formato markdown básico
+  const parseFormattedText = (text) => {
+    const parts = text.split(/(\*\*[^*]+\*\*)/g);
+    
+    return (
+      <span className="formatted-text">
+        {parts.map((part, idx) => {
+          if (part.startsWith('**') && part.endsWith('**')) {
+            return <strong key={idx}>{part.slice(2, -2)}</strong>;
+          }
+          return <span key={idx}>{part}</span>;
+        })}
+      </span>
+    );
+  };
+
   const handleSend = async (e) => {
     e.preventDefault();
     if (!input.trim() || loading) return;
@@ -76,11 +214,17 @@ const Chat = () => {
     try {
       const data = await sendChatQuery(userMessage);
 
-      let botText = "No he podido interpretar la respuesta.";
-      if (data.type === "data") {
-        botText = `He encontrado ${data.data.rows.length} resultados.`;
-      } else if (data.type === "chart") {
-        botText = `He generado un gráfico de tipo ${data.chart_type}.`;
+      let botText = data.respuesta_bot || "No he podido interpretar la respuesta.";
+      
+      if (!data.respuesta_bot) {
+        if (data.type === "data") {
+          const rowCount = Array.isArray(data.data) 
+            ? data.data.length 
+            : data.data?.rows?.length || 0;
+          botText = `He encontrado ${rowCount} resultados.`;
+        } else if (data.type === "chart") {
+          botText = `He generado un gráfico de tipo ${data.chart_type}.`;
+        }
       }
 
       setMessages((prev) => [
@@ -161,14 +305,17 @@ const Chat = () => {
           }
           
           .dataTable th,
-          .dataTable td {
+          .dataTable td,
+          .response-table th,
+          .response-table td {
             background: #ffffff !important;
             border: 1px solid #333333 !important;
             color: #000000 !important;
             opacity: 1 !important;
           }
           
-          .dataTable tr:nth-child(even) td {
+          .dataTable tr:nth-child(even) td,
+          .response-table tr:nth-child(even) td {
             background-color: #f0f0f0 !important;
           }
           
@@ -224,9 +371,23 @@ const Chat = () => {
     pdf.save("chat.pdf");
   };
 
+  const normalizeData = (data) => {
+    if (Array.isArray(data)) {
+      if (data.length === 0) return { columns: [], rows: [] };
+      
+      const columns = Object.keys(data[0]);
+      const rows = data.map(obj => columns.map(col => obj[col]));
+      
+      return { columns, rows };
+    } else if (data && data.columns && data.rows) {
+      return data;
+    }
+    return { columns: [], rows: [] };
+  };
+
   const handleDownloadCSV = (data, filename = "datos.csv") => {
-    const columns = data.columns;
-    const rows = data.rows;
+    const normalized = normalizeData(data);
+    const { columns, rows } = normalized;
 
     let csv = columns.join(",") + "\n";
     rows.forEach((row) => {
@@ -271,74 +432,98 @@ const Chat = () => {
       </article>
       <article className="chatArea">
         <aside className="messagesWindow" ref={chatRef}>
-          {messages.map((msg, index) => (
-            <div key={index} className={`message-item ${msg.sender}`}>
-              <strong>{msg.sender === "user" ? "Tú:" : "Bot:"}</strong>
-              <span> {msg.text}</span>
+          {messages.map((msg, index) => {
+            const normalizedData = msg.payload?.data 
+              ? normalizeData(msg.payload.data) 
+              : null;
 
-              {msg.sender === "bot" && msg.payload?.type === "chart" && (
-                <div className="chartContainer">
-                  <ChartRenderer payload={msg.payload} />
-                  <button
-                    className="downloadCSVButton"
-                    onClick={() => handleDownloadChartCSV(msg.payload)}
-                  >
-                    <BarChart2 size={16} /> Descargar datos CSV
-                  </button>
+            return (
+              <div key={index} className={`message-item ${msg.sender}`}>
+                <strong>{msg.sender === "user" ? "Tú:" : "Bot:"}</strong>
+                <div className="message-content">
+                  {msg.sender === "bot" ? formatBotResponse(msg.text) : <span>{msg.text}</span>}
                 </div>
-              )}
 
-              {msg.sender === "bot" && msg.payload?.type === "data" && (
-                <>
-                  <table className="dataTable">
-                    <thead>
-                      <tr>
-                        {msg.payload.data.columns.map((col, idx) => {
-                          const nombresHumanos = {
-                            date_trunc: "Fecha",
-                            max_importe_total: "Importe total máximo",
-                            total_importe_total: "Importe total",
-                            promedio_importe_total: "Promedio importe total",
-                            total_cantidad: "Cantidad total",
-                            pais: "País",
-                            conteo_transacciones: "Conteo de transacciones",
-                          };
-                          return (
-                            <th key={idx}>{nombresHumanos[col] || col}</th>
-                          );
-                        })}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {msg.payload.data.rows.map((row, rIdx) => (
-                        <tr key={rIdx}>
-                          {row.map((cell, cIdx) => {
-                            const colName = msg.payload.data.columns[cIdx];
+                {msg.sender === "bot" && msg.payload?.type === "chart" && (
+                  <div className="chartContainer">
+                    <ChartRenderer payload={msg.payload} />
+                    <button
+                      className="downloadCSVButton"
+                      onClick={() => handleDownloadChartCSV(msg.payload)}
+                    >
+                      <BarChart2 size={16} /> Descargar datos CSV
+                    </button>
+                  </div>
+                )}
 
-                            if (colName === "date_trunc") {
-                              const fecha = new Date(cell);
-                              return (
-                                <td key={cIdx}>{fecha.toLocaleDateString()}</td>
-                              );
-                            }
-                            return <td key={cIdx}>{cell}</td>;
+                {msg.sender === "bot" && msg.payload?.type === "data" && normalizedData && (
+                  <>
+                    <table className="dataTable">
+                      <thead>
+                        <tr>
+                          {normalizedData.columns.map((col, idx) => {
+                            const nombresHumanos = {
+                              date_trunc: "Fecha",
+                              max_importe_total: "Importe total máximo",
+                              total_importe_total: "Importe total",
+                              promedio_importe_total: "Promedio importe total",
+                              total_cantidad: "Cantidad total",
+                              pais: "País",
+                              conteo_transacciones: "Conteo de transacciones",
+                              producto: "Producto",
+                              ventas: "Ventas",
+                              coste: "Coste",
+                              margen: "Margen",
+                            };
+                            return (
+                              <th key={idx}>{nombresHumanos[col] || col}</th>
+                            );
                           })}
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  <button
-                    className="downloadCSVButton"
-                    onClick={() =>
-                      handleDownloadCSV(msg.payload.data, "tabla_datos.csv")
-                    }
-                  >
-                    <FileText size={16} /> Descargar tabla CSV
-                  </button>
-                </>
-              )}
-            </div>
-          ))}
+                      </thead>
+                      <tbody>
+                        {normalizedData.rows.map((row, rIdx) => (
+                          <tr key={rIdx}>
+                            {row.map((cell, cIdx) => {
+                              const colName = normalizedData.columns[cIdx];
+
+                              if (colName === "date_trunc") {
+                                const fecha = new Date(cell);
+                                return (
+                                  <td key={cIdx}>{fecha.toLocaleDateString()}</td>
+                                );
+                              }
+                              
+                              if (typeof cell === "number" && 
+                                  (colName === "ventas" || colName === "coste" || 
+                                   colName === "margen" || colName.includes("importe"))) {
+                                return (
+                                  <td key={cIdx}>{cell.toLocaleString("es-ES", {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2
+                                  })}</td>
+                                );
+                              }
+                              
+                              return <td key={cIdx}>{cell}</td>;
+                            })}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    <button
+                      className="downloadCSVButton"
+                      onClick={() =>
+                        handleDownloadCSV(msg.payload.data, "tabla_datos.csv")
+                      }
+                    >
+                      <FileText size={16} /> Descargar tabla CSV
+                    </button>
+                  </>
+                )}
+              </div>
+            );
+          })}
           <div ref={messagesEndRef} />
         </aside>
 
