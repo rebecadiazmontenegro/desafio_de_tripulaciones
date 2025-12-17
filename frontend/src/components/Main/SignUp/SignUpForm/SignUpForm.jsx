@@ -82,10 +82,7 @@ const SignUpAdminForm = () => {
           required
         >
           <option value="" disabled>Selecciona el Departamento</option>
-          <option value="relojes">Relojes inteligentes</option>
-          <option value="portatiles">Portátiles</option>
-          <option value="moviles">Móviles</option>
-          <option value="accesorios">Accesorios</option>
+          <option value="ventas">Ventas</option>
         </select>
 
         <button type="submit">Crear usuario</button>

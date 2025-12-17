@@ -7,7 +7,6 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Si ya está logueado, redirigir
     const token = localStorage.getItem("token");
     if (token) {
       try {
@@ -29,14 +28,13 @@ const Login = () => {
 
   return (
     <section className="login-section" style={{ position: "relative", overflow: "hidden", minHeight: "100vh" }}>
-      {/* Fondo animado */}
+
       <div className="animated-graphics">
         <GraphOne />
         <GraphTwo />
         <GraphThree />
       </div>
 
-      {/* Formulario de login */}
       <div style={{ position: "relative", zIndex: 1 }}>
         <LoginForm />
       </div>

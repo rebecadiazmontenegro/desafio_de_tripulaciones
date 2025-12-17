@@ -143,7 +143,7 @@ export const changePassword = async ( currentPassword, newPassword ) => {
 };
 
 export const changePasswordFirstTime = async (email, currentPassword, newPassword) => {
-  const response = await fetch(`${import.meta.env.VITE_API_URL}/user/change/password/first/time`, {
+  const response = await fetch(`${API_URL}/user/change/password/first/time`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json'
