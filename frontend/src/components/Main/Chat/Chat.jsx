@@ -8,6 +8,10 @@ const Chat = () => {
   const [loading, setLoading] = useState(false);
   const [userContext, setUserContext] = useState({});
   const messagesEndRef = useRef(null);
+  // Guardamos Todo el historial Formateado
+  const historyChat = useRef([]);
+  // "Semáforo" para ver si estamos cargando el historial
+  const isLoadingHistory = useRef(false);
 
   // Desempaquetamos JSON del Bot
   const parseMessage = (content) => {
@@ -38,21 +42,28 @@ const Chat = () => {
       ? ` con los datos de ${user.departamento.toUpperCase()}`
       : "";
 
-    setMessages([
-      {
+      const welcomeMessage = {
         sender: "bot",
         text: `Hola, ${
           user.nombre ?? "Usuario"
         }. Soy el Chatbot interno. ¿En qué puedo ayudarte${departamentoText}?`,
-      },
-    ]);
+      }
+
+    // setMessages([
+    //   {
+    //     sender: "bot",
+    //     text: `Hola, ${
+    //       user.nombre ?? "Usuario"
+    //     }. Soy el Chatbot interno. ¿En qué puedo ayudarte${departamentoText}?`,
+    //   },
+    // ]);
 
   // Función para pedir historial al Back
   const loadHistory = async () => {
     try {
       const history = await getMessages();
       
-      // Traducir formatos
+      // Traducir formatos Todo de Golpe
       const formatTranslation = history.map(dbMsg => {
         // Si es un JSON recoge la información, sino será null
         const data = parseMessage(dbMsg.message);
@@ -79,8 +90,13 @@ const Chat = () => {
         };
       });
 
+      // Guardamos todo en la "Caja Fuerte"
+      historyChat.current = formatTranslation;
+      // Sacamos los últimos 10 de primeras
+      const initialChat = formatTranslation.slice(-10);
+
       // Guardamos en el estado, Bienvenida e Historial Antiguo
-      setMessages(b => [...b, ...formatTranslation ]);
+      setMessages([welcomeMessage, ...initialChat ]);
     } catch (error) {
             console.error("No se pudo cargar el historial", error);
         }
@@ -88,9 +104,35 @@ const Chat = () => {
     loadHistory();
   }, []);
 
+  // Función para Manejar la Paginación
+  const handlePages = () => {
+    // Encendemos el Semáforo
+    isLoadingHistory.current = true;
+    // Calculamos Cuántos Mensajes hay en Pantalla, Quitando el de Bienvenida
+    const currentVisible = messages.length - 1;
 
-    // Scroll Automático
+    // Mostrar 10 más
+    const newCount = currentVisible + 10;
+    // Sacamos un Trozo más grande de la Caja Fuerte
+    const newMessages = historyChat.current.slice(-newCount);
+
+    setMessages(b => {
+      // Mantener Mensaje de Bienvenida siempre arriba
+      const welcome = b[0];
+      return [ welcome, ...newMessages];
+    })
+  }
+
+
+  // Scroll Automático
   useEffect(() => {
+
+    // Si el Semáforo está en Rojo: Significa que cargando el historial
+    if(isLoadingHistory.current) {
+      // Apagamos Semáforo para no hacer scroll
+      isLoadingHistory.current = false;
+      return;
+    }
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
@@ -103,7 +145,10 @@ const Chat = () => {
     setInput("");
     setLoading(true);
 
-    setMessages((prev) => [...prev, { sender: "user", text: userMessage }]);
+    const newUserMessage = { sender: "user", text: userMessage }
+    setMessages((prev) => [...prev, newUserMessage ]);
+    // Guardar mensaje para no perderlo al paginar
+    historyChat.current.push(newUserMessage);
 
     try {
       const data = await sendChatQuery(userMessage);
@@ -122,15 +167,14 @@ const Chat = () => {
         botText = finalData.message || "No he podido interpretar la respuesta.";
       }
 
-      setMessages((prev) => [
-        ...prev,
-        {
-          sender: "bot",
-          text: botText,
-          // Guardamos los datos para pintar la gráfica
-          payload: finalData,
-        },
-      ]);
+      const newBotMessage = {
+        sender: "bot",
+        text: botText,
+        // Guardamos los datos para pintar la gráfica
+        payload: finalData
+      }
+      setMessages((prev) => [ ...prev, newBotMessage ]);
+      historyChat.current.push(newBotMessage);
     } catch (error) {
       console.error(error);
       setMessages((prev) => [
@@ -142,10 +186,19 @@ const Chat = () => {
     }
   };
 
+  console.log("Total Historial (Ref):", historyChat.current.length);
+  console.log("Mensajes en Pantalla:", messages.length);
+  console.log("¿Debería salir botón?:", historyChat.current.length > (messages.length - 1));
+
 
   return (
     <div className="chat-area">
+      {/* Mostrar botón si en la caja fuerte hay más mensajes de los que vemos */}
+      { historyChat.current.length > (messages.length -1) && (
+        <button onClick={handlePages}>Cargar Mensajes Anteriores</button>
+      )}
       <div className="messages-window">
+
         {messages.map((msg, index) => (
           <div key={index} className={`message-item ${msg.sender}`}>
             <strong>{msg.sender === "user" ? "Tú:" : "Bot:"}</strong>
