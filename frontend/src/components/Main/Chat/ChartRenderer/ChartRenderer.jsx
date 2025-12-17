@@ -24,7 +24,35 @@ ChartJS.register(
 
 const ChartRenderer = ({ payload }) => {
   const { chart_type, data } = payload;
-  const [labelColumn, valueColumn] = data.columns;
+
+  // Normalizar datos a formato antiguo si vienen en formato nuevo
+  const normalizeData = (data) => {
+    if (Array.isArray(data)) {
+      // Nuevo formato: array de objetos
+      if (data.length === 0) return { columns: [], rows: [] };
+      
+      const columns = Object.keys(data[0]);
+      const rows = data.map(obj => columns.map(col => obj[col]));
+      
+      return { columns, rows };
+    } else if (data && data.columns && data.rows) {
+      // Formato antiguo
+      return data;
+    }
+    return { columns: [], rows: [] };
+  };
+
+  const normalizedData = normalizeData(data);
+  const { columns, rows } = normalizedData;
+
+  if (!columns.length || !rows.length) {
+    return <div>No hay datos para visualizar</div>;
+  }
+
+  // Determinar columnas de etiqueta y valor
+  // Por defecto, primera columna = etiquetas, segunda = valores
+  const labelColumn = columns[0];
+  const valueColumn = columns[1];
 
   // Alias de nombres humanos
   const nombresHumanos = {
@@ -35,24 +63,31 @@ const ChartRenderer = ({ payload }) => {
     total_cantidad: "Cantidad total",
     pais: "País",
     conteo_transacciones: "Conteo de transacciones",
+    producto: "Producto",
+    ventas: "Ventas",
+    coste: "Coste",
+    margen: "Margen",
   };
 
   // Labels
-  const labels = data.rows.map((row) => {
+  const labels = rows.map((row) => {
+    const labelValue = row[0];
+    
     if (labelColumn === "date_trunc") {
-      const fecha = new Date(row[0]);
+      const fecha = new Date(labelValue);
       const dia = fecha.getUTCDate().toString().padStart(2, "0");
       const mes = (fecha.getUTCMonth() + 1).toString().padStart(2, "0");
       const año = fecha.getUTCFullYear();
       return `${dia}/${mes}/${año}`;
     }
-    return row[0];
+    
+    return labelValue;
   });
 
   // Values
-  const values = data.rows.map((row) => {
+  const values = rows.map((row) => {
     const val = row[1];
-    return typeof val === "number" ? parseFloat(val.toFixed(2)) : val;
+    return typeof val === "number" ? parseFloat(val.toFixed(2)) : parseFloat(val);
   });
 
   // Paleta base
@@ -62,6 +97,11 @@ const ChartRenderer = ({ payload }) => {
     "rgba(168, 197, 240, 0.85)",
     "rgba(26, 53, 101, 0.85)",
     "rgba(231, 231, 231, 0.85)",
+    "rgba(100, 140, 230, 0.85)",
+    "rgba(45, 75, 150, 0.85)",
+    "rgba(200, 210, 240, 0.85)",
+    "rgba(80, 120, 200, 0.85)",
+    "rgba(150, 180, 230, 0.85)",
   ];
 
   // Estilos por tipo de gráfico
@@ -129,6 +169,26 @@ const ChartRenderer = ({ payload }) => {
         backgroundColor: "rgba(6, 18, 48, 0.9)",
         titleColor: "#fff",
         bodyColor: "#fff",
+        callbacks: {
+          label: function(context) {
+            let label = context.dataset.label || '';
+            if (label) {
+              label += ': ';
+            }
+            if (context.parsed.y !== null) {
+              label += context.parsed.y.toLocaleString('es-ES', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+              });
+            } else if (context.parsed !== null) {
+              label += context.parsed.toLocaleString('es-ES', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+              });
+            }
+            return label;
+          }
+        }
       },
     },
     scales:
@@ -139,7 +199,15 @@ const ChartRenderer = ({ payload }) => {
               grid: { color: "rgba(6, 18, 48, 0.1)" },
             },
             y: {
-              ticks: { color: "#061230" },
+              ticks: { 
+                color: "#061230",
+                callback: function(value) {
+                  return value.toLocaleString('es-ES', {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0
+                  });
+                }
+              },
               grid: { color: "rgba(6, 18, 48, 0.1)" },
             },
           }
