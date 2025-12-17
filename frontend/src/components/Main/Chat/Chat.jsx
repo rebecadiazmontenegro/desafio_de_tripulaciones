@@ -103,7 +103,6 @@ const Chat = () => {
         .filter(cell => cell)
     );
 
-    // Texto después de la tabla
     const afterTableIndex = tableStart + separatorIndex + 1 + dataLines.length;
     const afterTable = lines.slice(afterTableIndex).join('\n');
 
@@ -137,7 +136,6 @@ const Chat = () => {
     );
   };
 
-  // Parsear listas numeradas con negritas
   const parseNumberedList = (text) => {
     const lines = text.split('\n');
     const result = [];
@@ -152,7 +150,6 @@ const Chat = () => {
           currentText = [];
         }
         
-        // Extraer número, texto y valor
         const match = line.match(/^(\d+)\.\s\*\*(.+?)\*\*:?\s*(.+)$/);
         if (match) {
           const [, num, label, value] = match;
@@ -178,19 +175,87 @@ const Chat = () => {
     return <div className="formatted-response">{result}</div>;
   };
 
-  // Parsear texto con formato markdown básico
+
+  const parseInlineMarkdown = (text) => {
+    const parts = [];
+    let currentText = '';
+    let i = 0;
+    
+    while (i < text.length) {
+
+      if (text[i] === '*' && text[i + 1] === '*') {
+        if (currentText) {
+          parts.push(<span key={`text-${i}`}>{currentText}</span>);
+          currentText = '';
+        }
+        
+        const endIdx = text.indexOf('**', i + 2);
+        if (endIdx !== -1) {
+          const boldText = text.slice(i + 2, endIdx);
+          parts.push(<strong key={`bold-${i}`}>{boldText}</strong>);
+          i = endIdx + 2;
+          continue;
+        }
+      }
+      
+      if (text[i] === '`' && text[i + 1] === '`' && text[i + 2] === '`') {
+        if (currentText) {
+          parts.push(<span key={`text-${i}`}>{currentText}</span>);
+          currentText = '';
+        }
+        
+        const endIdx = text.indexOf('```', i + 3);
+        if (endIdx !== -1) {
+          const codeText = text.slice(i + 3, endIdx);
+          parts.push(
+            <code key={`code-${i}`} style={{ 
+              backgroundColor: '#f5f5f5', 
+              padding: '2px 6px', 
+              borderRadius: '3px',
+              fontFamily: 'monospace',
+              fontSize: '0.9em'
+            }}>
+              {codeText}
+            </code>
+          );
+          i = endIdx + 3;
+          continue;
+        }
+      }
+      
+      currentText += text[i];
+      i++;
+    }
+    
+    if (currentText) {
+      parts.push(<span key={`text-final`}>{currentText}</span>);
+    }
+    
+    return parts.length > 0 ? parts : text;
+  };
+
   const parseFormattedText = (text) => {
-    const parts = text.split(/(\*\*[^*]+\*\*)/g);
+    const paragraphs = text.split('\n\n');
     
     return (
-      <span className="formatted-text">
-        {parts.map((part, idx) => {
-          if (part.startsWith('**') && part.endsWith('**')) {
-            return <strong key={idx}>{part.slice(2, -2)}</strong>;
+      <div className="formatted-text">
+        {paragraphs.map((paragraph, pIdx) => {
+          if (paragraph.trim().startsWith('*') && paragraph.includes('\n*')) {
+            const items = paragraph.split('\n').filter(line => line.trim().startsWith('*'));
+            return (
+              <ul key={pIdx} style={{ marginLeft: '20px', marginTop: '10px', marginBottom: '10px' }}>
+                {items.map((item, iIdx) => (
+                  <li key={iIdx} style={{ marginBottom: '5px' }}>
+                    {parseInlineMarkdown(item.replace(/^\*\s*/, ''))}
+                  </li>
+                ))}
+              </ul>
+            );
           }
-          return <span key={idx}>{part}</span>;
+          
+          return <p key={pIdx} style={{ marginBottom: '10px' }}>{parseInlineMarkdown(paragraph)}</p>;
         })}
-      </span>
+      </div>
     );
   };
 
@@ -235,7 +300,7 @@ const Chat = () => {
     }
   };
 
-  const handleDownloadPDF = async () => {
+    const handleDownloadPDF = async () => {
     if (!chatRef.current) return;
 
     const originalOverflow = chatRef.current.style.overflow;
@@ -413,7 +478,10 @@ const Chat = () => {
 
   return (
     <section className="chat">
+      <article className="chatHeader">
       <h1>Tu chatbot</h1>
+      <p>Realiza todas tus consultas. Si no sabes como empezar, no dudes en revisar nuestra guía.</p>
+      </article>
       <article className="actionButtons">
         <button className="backButton" onClick={() => navigate(-1)}>
           <ArrowLeft size={16} /> Volver

@@ -153,7 +153,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1019px) {
   h1 {
     font-size: 40px;
   }
@@ -173,24 +173,23 @@
   }
 }
 
-@media (max-width: 1024px) {
-  h1 {
-    font-size: 50px;
+
+@media (min-width: 1020px) {
+  .guiaInfo {
+   align-items: start;
+  .guia {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    max-width: 1400px;
   }
+
   .guia aside {
-    flex: 1 1 400px;
+    width: 1200px;
+    max-width: none;
   }
 }
-
-@media (min-width: 1200px) {
-  .guia {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .guia aside {
-    flex: 1 1 auto;
-    width: 100%;
-    max-width: 1200px;
-  }
 }

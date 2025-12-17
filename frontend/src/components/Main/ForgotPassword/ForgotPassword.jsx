@@ -15,14 +15,13 @@ const ForgotPassword = () => {
     setSuccess("");
     setLoading(true);
 
-    // Validación básica
+
     if (!email) {
       setError("El email es requerido");
       setLoading(false);
       return;
     }
 
-    // Validar formato de email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setError("Email inválido");

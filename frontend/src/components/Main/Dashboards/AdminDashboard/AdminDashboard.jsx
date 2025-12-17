@@ -27,31 +27,32 @@ const AdminDashboard = ({ userName }) => {
       </article>
 
       <article className="cardButtons">
-        <button onClick={() => navigate("/users/list")}>
-          <Users size={50} />
-          <h3>Ver Usuarios</h3>
-          <p>Administra la lista de usuarios</p>
-        </button>
+        <aside className="chatTeam">
+          <button onClick={() => navigate("/users/list")}>
+            <Users size={50} />
+            <h3>Ver Usuarios</h3>
+            <p>Administra la lista de usuarios</p>
+          </button>
 
-        <button onClick={() => navigate("/chat")}>
-          <MessageCircle size={50} />
-          <h3>Chat</h3>
-          <p>Administra los proyectos activos</p>
-        </button>
+          <button onClick={() => navigate("/chat")}>
+            <MessageCircle size={50} />
+            <h3>Chat</h3>
+            <p>Administra los proyectos activos</p>
+          </button>
+        </aside>
+        <aside className="createManagerButton">
+          <button onClick={() => navigate("/signup")}>
+            <UserPlus size={50} />
+            <h3>Crear Manager</h3>
+            <p>Registra nuevos usuarios en el sistema</p>
+          </button>
+
+          <button className="guideButton" onClick={() => navigate("/guia")}>
+            <Info size={28} />
+            <h3>Guía de uso</h3>
+          </button>
+        </aside>
       </article>
-      <aside className="createManagerButton">
-        <button onClick={() => navigate("/signup")}>
-          <UserPlus size={50} />
-          <h3>Crear Manager</h3>
-          <p>Registra nuevos usuarios en el sistema</p>
-        </button>
-   
-        <button className="guideButton" onClick={() => navigate("/guia")}>
-          <Info size={28} />
-          <h3>Guía de uso</h3>
-        </button>
-      </aside>
-
       <article className="profileButtons">
         <button
           className="changePasswordButton"

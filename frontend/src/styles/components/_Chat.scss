@@ -1,9 +1,16 @@
 .chat {
-  h1 {
-    font-size: 70px;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 4px solid rgba(255, 255, 255, 0.6);
+  .chatHeader {
+    h1 {
+      font-size: 70px;
+      margin-bottom: 20px;
+    }
+
+    p {
+      color: var(--white);
+
+      padding-bottom: 10px;
+      border-bottom: 4px solid rgba(255, 255, 255, 0.6);
+    }
   }
 
   .chatArea {
@@ -150,7 +157,7 @@
     background-color: #2196f3;
     border: none;
     margin-top: 16px;
-    color: #ffffff;
+    color: var(--white);
     font-size: 0.9em;
 
     &:hover {
@@ -164,7 +171,7 @@
     flex-direction: row;
     justify-content: center;
     gap: 8px;
-    margin-top: 16px;
+    margin-top: 30px;
     flex-wrap: wrap;
   }
 
@@ -263,8 +270,16 @@
     }
   }
 
-
   @media (min-width: 1024px) {
+    .actionButtons {
+      .backButton,
+      .guideButton {
+        justify-content: center;
+        width: 300px;
+        padding: 16px 24px;
+        font-size: 20px;
+      }
+    }
     .chatArea {
       width: 1200px;
       height: 700px;
@@ -306,18 +321,18 @@
       margin-top: 20px;
     }
 
-     .chatButtons {
-    flex-direction: row;
-    gap: 12px; 
-    width: 700px;
-    justify-content: center;
-    flex-wrap: nowrap; 
-  }
+    .chatButtons {
+      flex-direction: row;
+      gap: 12px;
+      width: 700px;
+      justify-content: center;
+      flex-wrap: nowrap;
+    }
 
     .sendButton,
-  .downloadPDFButton {
-    flex: 1; 
-    width: 500px; 
-  }
+    .downloadPDFButton {
+      flex: 1;
+      width: 500px;
+    }
   }
 }
