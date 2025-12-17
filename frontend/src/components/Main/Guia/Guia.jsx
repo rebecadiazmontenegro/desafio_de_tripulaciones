@@ -1,10 +1,15 @@
 import React from "react";
-import { Info, Activity, Layers, Zap, XCircle, AlertCircle, Rocket, Bell } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Info, Activity, Layers, Zap, XCircle, AlertCircle, Rocket, Bell, ArrowLeft } from "lucide-react";
 
 const Guia = () => {
+  const navigate = useNavigate();
   return (
     <section className="guiaInfo">
       <h1>Guía de Usuario para el Chatbot de Consultas SQL</h1>
+       <button className="backButton" onClick={() => navigate(-1)}>
+        <ArrowLeft size={16} /> Volver
+      </button>
       <article className="guia" style={{ padding: "20px", maxWidth: "800px" }}>
         <aside className="asideOne">
           <div>
