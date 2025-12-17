@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signUp } from "../../../../service/users.service";
-
+import { ArrowLeft } from "lucide-react";
 
 const SignUpAdminForm = () => {
   const navigate = useNavigate();
@@ -34,14 +34,19 @@ const SignUpAdminForm = () => {
     }
 
     setMessage(`${data.msg}`);
-    alert(`Usuario creado correctamente: ${form.nombre} ${form.apellidos}. Se ha enviado la contraseña a ${form.email}`);
+    alert(
+      `Usuario creado correctamente: ${form.nombre} ${form.apellidos}. Se ha enviado la contraseña a ${form.email}`
+    );
 
-    navigate("/dashboard")
+    navigate("/dashboard");
   };
 
   return (
     <article className="signUpAdmin">
       <h1>Crear usuario</h1>
+      <button className="backButton" onClick={() => navigate(-1)}>
+        <ArrowLeft size={16} /> Volver
+      </button>
       {message && <p>{message}</p>}
       <form className="signUpAdminForm" onSubmit={handleSubmit}>
         <label>Nombre:</label>
@@ -81,7 +86,9 @@ const SignUpAdminForm = () => {
           onChange={handleChange}
           required
         >
-          <option value="" disabled>Selecciona el Departamento</option>
+          <option value="" disabled>
+            Selecciona el Departamento
+          </option>
           <option value="ventas">Ventas</option>
         </select>
 

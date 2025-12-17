@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import UserCard from "./UserCard/UserCard";
 import { getManagers, getWorkers } from "../../../service/users.service";
+import { ArrowLeft } from "lucide-react";
 
 const UsersList = () => {
   const [users, setUsers] = useState([]);
@@ -61,6 +62,9 @@ const UsersList = () => {
     <section className="allUsersList">
       <h1>{user.rol === "admin" ? "Managers" : "Workers"}</h1>
       <p>Gestiona los managers de cada departamento</p>
+      <button className="backButton" onClick={() => navigate(-1)}>
+        <ArrowLeft size={16} /> Volver
+      </button>
       <article className="allUsers">
         {users.map((u) => (
           <UserCard

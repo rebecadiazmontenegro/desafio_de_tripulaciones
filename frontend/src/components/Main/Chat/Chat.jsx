@@ -72,7 +72,7 @@ const Chat = () => {
       return parseTableResponse(text);
     }
 
-    const hasNumberedList = /\d+\.\s\*\*/.test(text) || /\d+\.\s[A-Z]/.test(text);
+    const hasNumberedList = /^\d+\.\s/m.test(text);
     if (hasNumberedList) {
       return parseNumberedList(text);
     }
@@ -103,7 +103,6 @@ const Chat = () => {
         .filter(cell => cell)
     );
 
-    // Texto después de la tabla
     const afterTableIndex = tableStart + separatorIndex + 1 + dataLines.length;
     const afterTable = lines.slice(afterTableIndex).join('\n');
 
@@ -137,7 +136,6 @@ const Chat = () => {
     );
   };
 
-  // Parsear listas numeradas con negritas
   const parseNumberedList = (text) => {
     const lines = text.split('\n');
     const result = [];
@@ -148,11 +146,10 @@ const Chat = () => {
       
       if (isListItem) {
         if (currentText.length > 0) {
-          result.push(<p key={`text-${idx}`}>{currentText.join(' ')}</p>);
+          result.push(<p key={`text-${idx}`}>{parseInlineMarkdown(currentText.join(' '))}</p>);
           currentText = [];
         }
         
-        // Extraer número, texto y valor
         const match = line.match(/^(\d+)\.\s\*\*(.+?)\*\*:?\s*(.+)$/);
         if (match) {
           const [, num, label, value] = match;
@@ -160,11 +157,11 @@ const Chat = () => {
             <div key={idx} className="list-item">
               <span className="list-number">{num}.</span>
               <strong className="list-label">{label}:</strong>
-              <span className="list-value">{value}</span>
+              <span className="list-value">{parseInlineMarkdown(value)}</span>
             </div>
           );
         } else {
-          result.push(<p key={idx}>{line}</p>);
+          result.push(<p key={idx}>{parseInlineMarkdown(line)}</p>);
         }
       } else {
         currentText.push(line);
@@ -172,26 +169,150 @@ const Chat = () => {
     });
 
     if (currentText.length > 0) {
-      result.push(<p key="text-final">{currentText.join(' ')}</p>);
+      result.push(<p key="text-final">{parseInlineMarkdown(currentText.join(' '))}</p>);
     }
 
     return <div className="formatted-response">{result}</div>;
   };
 
-  // Parsear texto con formato markdown básico
-  const parseFormattedText = (text) => {
-    const parts = text.split(/(\*\*[^*]+\*\*)/g);
+
+  const parseInlineMarkdown = (text) => {
+    const parts = [];
+    let currentText = '';
+    let i = 0;
     
-    return (
-      <span className="formatted-text">
-        {parts.map((part, idx) => {
-          if (part.startsWith('**') && part.endsWith('**')) {
-            return <strong key={idx}>{part.slice(2, -2)}</strong>;
-          }
-          return <span key={idx}>{part}</span>;
-        })}
-      </span>
-    );
+    while (i < text.length) {
+
+      if (text[i] === '*' && text[i + 1] === '*') {
+        if (currentText) {
+          parts.push(<span key={`text-${i}`}>{currentText}</span>);
+          currentText = '';
+        }
+        
+        const endIdx = text.indexOf('**', i + 2);
+        if (endIdx !== -1) {
+          const boldText = text.slice(i + 2, endIdx);
+          parts.push(<strong key={`bold-${i}`}>{boldText}</strong>);
+          i = endIdx + 2;
+          continue;
+        }
+      }
+      
+      if (text[i] === '`' && text[i + 1] === '`' && text[i + 2] === '`') {
+        if (currentText) {
+          parts.push(<span key={`text-${i}`}>{currentText}</span>);
+          currentText = '';
+        }
+        
+        const endIdx = text.indexOf('```', i + 3);
+        if (endIdx !== -1) {
+          const codeText = text.slice(i + 3, endIdx);
+          parts.push(
+            <code key={`code-${i}`} style={{ 
+              backgroundColor: '#f5f5f5', 
+              padding: '2px 6px', 
+              borderRadius: '3px',
+              fontFamily: 'monospace',
+              fontSize: '0.9em'
+            }}>
+              {codeText}
+            </code>
+          );
+          i = endIdx + 3;
+          continue;
+        }
+      }
+      
+      currentText += text[i];
+      i++;
+    }
+    
+    if (currentText) {
+      parts.push(<span key={`text-final`}>{currentText}</span>);
+    }
+    
+    return parts.length > 0 ? parts : text;
+  };
+
+  const parseFormattedText = (text) => {
+    const lines = text.split('\n');
+    const result = [];
+    let currentParagraph = [];
+    let inBulletList = false;
+    let bulletItems = [];
+
+    lines.forEach((line, idx) => {
+      const trimmedLine = line.trim();
+      
+      // Detectar líneas con viñetas (asterisco o guión)
+      const isBullet = (trimmedLine.startsWith('*') && !trimmedLine.startsWith('**')) || 
+                       trimmedLine.startsWith('-');
+      
+      if (isBullet) {
+        if (currentParagraph.length > 0) {
+          result.push(
+            <p key={`p-${idx}`} style={{ marginBottom: '10px' }}>
+              {parseInlineMarkdown(currentParagraph.join(' '))}
+            </p>
+          );
+          currentParagraph = [];
+        }
+        
+        inBulletList = true;
+        bulletItems.push(trimmedLine.replace(/^[\*\-]\s*/, ''));
+      } else {
+        // Si había una lista de viñetas, renderizarla
+        if (inBulletList && bulletItems.length > 0) {
+          result.push(
+            <ul key={`ul-${idx}`} style={{ marginLeft: '20px', marginTop: '10px', marginBottom: '10px' }}>
+              {bulletItems.map((item, iIdx) => (
+                <li key={iIdx} style={{ marginBottom: '5px' }}>
+                  {parseInlineMarkdown(item)}
+                </li>
+              ))}
+            </ul>
+          );
+          bulletItems = [];
+          inBulletList = false;
+        }
+        
+        // Si la línea está vacía y hay un párrafo acumulado, renderizarlo
+        if (trimmedLine === '' && currentParagraph.length > 0) {
+          result.push(
+            <p key={`p-${idx}`} style={{ marginBottom: '10px' }}>
+              {parseInlineMarkdown(currentParagraph.join(' '))}
+            </p>
+          );
+          currentParagraph = [];
+        } else if (trimmedLine !== '') {
+          currentParagraph.push(line);
+        }
+      }
+    });
+
+    // Renderizar lista de viñetas pendiente
+    if (bulletItems.length > 0) {
+      result.push(
+        <ul key="ul-final" style={{ marginLeft: '20px', marginTop: '10px', marginBottom: '10px' }}>
+          {bulletItems.map((item, iIdx) => (
+            <li key={iIdx} style={{ marginBottom: '5px' }}>
+              {parseInlineMarkdown(item)}
+            </li>
+          ))}
+        </ul>
+      );
+    }
+
+    // Renderizar párrafo pendiente
+    if (currentParagraph.length > 0) {
+      result.push(
+        <p key="p-final" style={{ marginBottom: '10px' }}>
+          {parseInlineMarkdown(currentParagraph.join(' '))}
+        </p>
+      );
+    }
+
+    return <div className="formatted-text">{result}</div>;
   };
 
   const handleSend = async (e) => {
@@ -235,7 +356,7 @@ const Chat = () => {
     }
   };
 
-  const handleDownloadPDF = async () => {
+    const handleDownloadPDF = async () => {
     if (!chatRef.current) return;
 
     const originalOverflow = chatRef.current.style.overflow;
@@ -413,7 +534,10 @@ const Chat = () => {
 
   return (
     <section className="chat">
+      <article className="chatHeader">
       <h1>Tu chatbot</h1>
+      <p>Realiza todas tus consultas. Si no sabes como empezar, no dudes en revisar nuestra guía.</p>
+      </article>
       <article className="actionButtons">
         <button className="backButton" onClick={() => navigate(-1)}>
           <ArrowLeft size={16} /> Volver

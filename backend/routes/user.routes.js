@@ -30,23 +30,21 @@ router.get("/logout", (req, res) => {
   return res.status(200).json({ message: "Logout exitoso" });
 });
 
-router.get(
-  "/managers",
-  authMiddleware, 
-  usersController.getAllManagers
-);
+router.get("/managers", authMiddleware, usersController.getAllManagers);
 
-router.get(
-  "/workers",
-  authMiddleware, 
-  usersController.getAllWorkers
-);
+router.get("/workers", authMiddleware, usersController.getAllWorkers);
 
 router.delete("/:email", authMiddleware, usersController.deleteUser);
 
-// router.put("/change-password", usersController.updatePassword);
-router.put("/change/password", authMiddleware, usersController.changePasswordUnified);
-router.put("/change/password/first/time", usersController.changePasswordFirstTime);
+router.put(
+  "/change/password",
+  authMiddleware,
+  usersController.changePasswordUnified
+);
+router.put(
+  "/change/password/first/time",
+  usersController.changePasswordFirstTime
+);
 
 router.post("/forgot-password", usersController.forgotPassword);
 

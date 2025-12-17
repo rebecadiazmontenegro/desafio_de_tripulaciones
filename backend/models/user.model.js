@@ -2,60 +2,62 @@ const queries = require("../queries/user.queries");
 const pool = require("../config/db_pgsql");
 
 const getUserModel = async (email) => {
-  let client, result;
-
+  let client;
   try {
     client = await pool.connect();
-    const data = await client.query(queries.getUser, [email]);
-    result = data.rows[0];
+    const result = await client.query(queries.getUser, [email]);
+    return result.rows[0];
   } catch (err) {
     console.log(err);
     throw err;
   } finally {
     client.release();
   }
-
-  return result;
 };
 
 const getAllManagersModel = async () => {
-  let client, result;
+  let client;
   try {
     client = await pool.connect();
-    const data = await client.query(queries.getAllManagers);
-    result = data.rows; 
+    const result = await client.query(queries.getAllManagers);
+    return result.rows;
   } catch (err) {
     console.error("Error en getAllManagers:", err);
     throw err;
   } finally {
     if (client) client.release();
   }
-  return result;
 };
 
 const getAllWorkersModel = async () => {
-  let client, result;
+  let client;
   try {
     client = await pool.connect();
-    const data = await client.query(queries.getAllWorkers);
-    result = data.rows; 
+    const result = await client.query(queries.getAllWorkers);
+    return result.rows;
   } catch (err) {
     console.error("Error en getAllWorkers:", err);
     throw err;
   } finally {
     if (client) client.release();
   }
-  return result;
 };
 
 const createUserModel = async (user) => {
-  const { nombre, apellidos, email, password, departamento, rol, reset_password_expires } = user;
-  let client;
+  const {
+    nombre,
+    apellidos,
+    email,
+    password,
+    departamento,
+    rol,
+    reset_password_expires
+  } = user;
 
+  let client;
   try {
     client = await pool.connect();
-
-    const data = await client.query(queries.createUser, [
+    const result = await client.query(queries.createUser, [
       nombre,
       apellidos,
       email,
@@ -65,25 +67,21 @@ const createUserModel = async (user) => {
       true,
       reset_password_expires
     ]);
-
-    return data.rows[0];
+    return result.rows[0];
   } catch (err) {
     console.log("Error en createUser:", err);
     throw err;
   } finally {
     if (client) client.release();
   }
-}; 
+};
 
 const deleteUserByEmail = async (email) => {
   let client;
   try {
     client = await pool.connect();
-    const result = await client.query(
-      queries.deleteUserByEmail,
-      [email]
-    );
-    return result.rows[0]; 
+    const result = await client.query(queries.deleteUserByEmail, [email]);
+    return result.rows[0];
   } catch (err) {
     console.error("Error en deleteUserByEmail:", err);
     throw err;
@@ -92,49 +90,15 @@ const deleteUserByEmail = async (email) => {
   }
 };
 
-// const getUserByIdModel = async (id) => {
-//   const client = await pool.connect();
-//   try {
-//     const query = "SELECT * FROM users WHERE id = $1";
-//     const result = await client.query(query, [id]);
-//     return result.rows[0];
-//   } catch (error) {
-//     console.error("Error en getUserByIdModel:", error);
-//     throw error;
-//   } finally {
-//     client.release();
-//   }
-// };
-
-// const updatePasswordModel = async (userId, hashedPassword) => {
-//   const client = await pool.connect();
-//   try {
-//     const query = "UPDATE users SET password = $1 WHERE id = $2";
-//     await client.query(query, [hashedPassword, userId]);
-//   } catch (error) {
-//     console.error("Error en updatePasswordModel:", error);
-//     throw error;
-//   } finally {
-//     client.release();
-//   }
-// };
-
-// const updatePasswordModel = async (email, newPasswordHash) => {
-//   try {
-//     const client = await pool.query(queries.updatePassword, [ newPasswordHash, email ]);
-//     return client.rows[0];
-//   } catch (err) {
-//     console.log("Error en al Cambiar Contraseña:", err);
-//     throw err;
-//   }
-// }
-
 const updateLoginAttemptsModel = async (userId, attempts, lockUntil) => {
   let client;
   try {
     client = await pool.connect();
-    // Aquí usamos la variable queries.updateLoginStats, NO escribimos el string
-    await client.query(queries.updateLoginStats, [attempts, lockUntil, userId]);
+    await client.query(queries.updateLoginStats, [
+      attempts,
+      lockUntil,
+      userId
+    ]);
   } catch (err) {
     console.error("Error en updateLoginAttemptsModel:", err);
     throw err;
@@ -143,41 +107,11 @@ const updateLoginAttemptsModel = async (userId, attempts, lockUntil) => {
   }
 };
 
-// const updatePasswordModel = async (email, hashedPassword, resetPassword = false, resetExpires = null) => {
-//   try {
-//     const query = `
-//       UPDATE users
-//       SET password = $1,
-//           reset_password = $2,
-//           reset_password_expires = $3
-//       WHERE email = $4
-//       RETURNING id, nombre, apellidos, email;
-//     `;
-
-//     const values = [hashedPassword, resetPassword, resetExpires, email];
-
-//     const result = await pool.query(query, values);
-//     return result.rows[0]; // Devuelve el usuario actualizado
-//   } catch (error) {
-//     console.error("Error en updatePasswordModel:", error);
-//     throw new Error("Error actualizando la contraseña.");
-//   }
-// };
-
-////////////////////
-
-
 const getUserByIdModel = async (userId) => {
   let client;
   try {
-    client = await pool.connect(); // ✅ Usar pool
-    const query = `
-      SELECT id, nombre, apellidos, email, password, rol, departamento, 
-             reset_password, reset_password_expires
-      FROM users
-      WHERE id = $1
-    `;
-    const result = await client.query(query, [userId]);
+    client = await pool.connect();
+    const result = await client.query(queries.getUserById, [userId]);
     return result.rows[0] || null;
   } catch (error) {
     console.error("Error en getUserByIdModel:", error);
@@ -190,14 +124,8 @@ const getUserByIdModel = async (userId) => {
 const getUserByEmailModel = async (email) => {
   let client;
   try {
-    client = await pool.connect(); // ✅ Usar pool
-    const query = `
-      SELECT id, nombre, apellidos, email, password, rol, departamento, 
-             reset_password, reset_password_expires
-      FROM users 
-      WHERE email = $1
-    `;
-    const result = await client.query(query, [email]);
+    client = await pool.connect();
+    const result = await client.query(queries.getUserByEmail, [email]);
     return result.rows[0] || null;
   } catch (error) {
     console.error("Error en getUserByEmailModel:", error);
@@ -210,19 +138,11 @@ const getUserByEmailModel = async (email) => {
 const updatePasswordModel = async (email, hashedPassword, resetPassword, resetPasswordExpires) => {
   let client;
   try {
-    client = await pool.connect(); // ✅ Usar pool
-    const query = `
-      UPDATE users 
-      SET password = $1, 
-          reset_password = $2, 
-          reset_password_expires = $3
-      WHERE email = $4
-      RETURNING id, email, nombre
-    `;
-    const result = await client.query(query, [
-      hashedPassword, 
-      resetPassword, 
-      resetPasswordExpires, 
+    client = await pool.connect();
+    const result = await client.query(queries.updatePassword, [
+      hashedPassword,
+      resetPassword,
+      resetPasswordExpires,
       email
     ]);
     return result.rows[0] || null;
@@ -238,13 +158,10 @@ const updatePasswordNormalModel = async (userId, hashedPassword) => {
   let client;
   try {
     client = await pool.connect();
-    const query = `
-      UPDATE users 
-      SET password = $1
-      WHERE id = $2
-      RETURNING id, email, nombre
-    `;
-    const result = await client.query(query, [hashedPassword, userId]);
+    const result = await client.query(
+      queries.updatePasswordNormal,
+      [hashedPassword, userId]
+    );
     return result.rows[0] || null;
   } catch (error) {
     console.error("Error en updatePasswordNormalModel:", error);

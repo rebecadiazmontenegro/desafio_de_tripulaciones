@@ -24,19 +24,15 @@ ChartJS.register(
 
 const ChartRenderer = ({ payload }) => {
   const { chart_type, data } = payload;
-
-  // Normalizar datos a formato antiguo si vienen en formato nuevo
   const normalizeData = (data) => {
     if (Array.isArray(data)) {
-      // Nuevo formato: array de objetos
       if (data.length === 0) return { columns: [], rows: [] };
-      
+
       const columns = Object.keys(data[0]);
-      const rows = data.map(obj => columns.map(col => obj[col]));
-      
+      const rows = data.map((obj) => columns.map((col) => obj[col]));
+
       return { columns, rows };
     } else if (data && data.columns && data.rows) {
-      // Formato antiguo
       return data;
     }
     return { columns: [], rows: [] };
@@ -49,12 +45,9 @@ const ChartRenderer = ({ payload }) => {
     return <div>No hay datos para visualizar</div>;
   }
 
-  // Determinar columnas de etiqueta y valor
-  // Por defecto, primera columna = etiquetas, segunda = valores
   const labelColumn = columns[0];
   const valueColumn = columns[1];
 
-  // Alias de nombres humanos
   const nombresHumanos = {
     date_trunc: "Fecha",
     max_importe_total: "Importe total máximo",
@@ -69,10 +62,9 @@ const ChartRenderer = ({ payload }) => {
     margen: "Margen",
   };
 
-  // Labels
   const labels = rows.map((row) => {
     const labelValue = row[0];
-    
+
     if (labelColumn === "date_trunc") {
       const fecha = new Date(labelValue);
       const dia = fecha.getUTCDate().toString().padStart(2, "0");
@@ -80,20 +72,20 @@ const ChartRenderer = ({ payload }) => {
       const año = fecha.getUTCFullYear();
       return `${dia}/${mes}/${año}`;
     }
-    
+
     return labelValue;
   });
 
-  // Values
   const values = rows.map((row) => {
     const val = row[1];
-    return typeof val === "number" ? parseFloat(val.toFixed(2)) : parseFloat(val);
+    return typeof val === "number"
+      ? parseFloat(val.toFixed(2))
+      : parseFloat(val);
   });
 
-  // Paleta base
   const baseColors = [
-    "rgba(6, 18, 48, 0.85)", // dark
-    "rgba(66, 105, 210, 0.85)", // light
+    "rgba(6, 18, 48, 0.85)",
+    "rgba(66, 105, 210, 0.85)",
     "rgba(168, 197, 240, 0.85)",
     "rgba(26, 53, 101, 0.85)",
     "rgba(231, 231, 231, 0.85)",
@@ -104,7 +96,6 @@ const ChartRenderer = ({ payload }) => {
     "rgba(150, 180, 230, 0.85)",
   ];
 
-  // Estilos por tipo de gráfico
   const datasetStyle = (() => {
     if (chart_type === "pie") {
       return {
@@ -170,25 +161,25 @@ const ChartRenderer = ({ payload }) => {
         titleColor: "#fff",
         bodyColor: "#fff",
         callbacks: {
-          label: function(context) {
-            let label = context.dataset.label || '';
+          label: function (context) {
+            let label = context.dataset.label || "";
             if (label) {
-              label += ': ';
+              label += ": ";
             }
             if (context.parsed.y !== null) {
-              label += context.parsed.y.toLocaleString('es-ES', {
+              label += context.parsed.y.toLocaleString("es-ES", {
                 minimumFractionDigits: 2,
-                maximumFractionDigits: 2
+                maximumFractionDigits: 2,
               });
             } else if (context.parsed !== null) {
-              label += context.parsed.toLocaleString('es-ES', {
+              label += context.parsed.toLocaleString("es-ES", {
                 minimumFractionDigits: 2,
-                maximumFractionDigits: 2
+                maximumFractionDigits: 2,
               });
             }
             return label;
-          }
-        }
+          },
+        },
       },
     },
     scales:
@@ -199,14 +190,14 @@ const ChartRenderer = ({ payload }) => {
               grid: { color: "rgba(6, 18, 48, 0.1)" },
             },
             y: {
-              ticks: { 
+              ticks: {
                 color: "#061230",
-                callback: function(value) {
-                  return value.toLocaleString('es-ES', {
+                callback: function (value) {
+                  return value.toLocaleString("es-ES", {
                     minimumFractionDigits: 0,
-                    maximumFractionDigits: 0
+                    maximumFractionDigits: 0,
                   });
-                }
+                },
               },
               grid: { color: "rgba(6, 18, 48, 0.1)" },
             },

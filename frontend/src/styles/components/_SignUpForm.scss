@@ -11,11 +11,35 @@
 
   animation: fadeIn 0.6s ease-in;
 
+  .backButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: var(--white);
+  color: var(--dark);
+  border: none;
+  border-radius: 24px;
+  padding: 8px 16px;
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  margin-top: 0px;
+  margin-bottom: 24px;
+  transition: all 0.3s ease;
+
+  &:hover {
+      transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 6px 15px rgba(6, 18, 48, 0.3);
+  }
+}
+
   h1 {
     text-align: center;
     font-size: 50px;
     font-weight: var(--font-medium);
     color: var(--white);
+    margin-bottom: 24px;
+     padding-bottom: 16px;
+      border-bottom: 3px solid rgba(255, 255, 255, 0.6);
   }
 
   p {
@@ -133,11 +157,12 @@
 @media (min-width: 1024px) {
   .signUpAdmin {
     h1 {
+      width: 1200px;
       font-size: 70px;
     }
 
     .signUpAdminForm {
-      max-width: 500px;
+      max-width: 700px;
     }
   }
 }

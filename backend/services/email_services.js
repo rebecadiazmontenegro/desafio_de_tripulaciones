@@ -2,7 +2,6 @@ const Brevo = require('@getbrevo/brevo');
 require("dotenv").config();
 
 
-// Configuración de la autenticación
 let apiInstance = new Brevo.TransactionalEmailsApi();
 let apiKey = apiInstance.authentications['apiKey'];
 apiKey.apiKey = process.env.BREVO_API_KEY;
@@ -11,8 +10,7 @@ const changePassword = async (email, username, defaultPassword) => {
     const SendSmtpEmail = new Brevo.SendSmtpEmail();
 
     const urlFrontend = process.env.FRONTEND_URL || 'http://localhost:5173';
-
-    // Email
+    
     SendSmtpEmail.subject = "Bienvenid@ a la Empresa!";
     SendSmtpEmail.sender = { "name": "Desafío Tripulaciones", "email": process.env.EMAIL_SENDER };
     SendSmtpEmail.to = [{ "email": email, "name": username }];
@@ -25,13 +23,12 @@ const changePassword = async (email, username, defaultPassword) => {
             <a href=${urlFrontend}>Ir a Iniciar Sesión</a>`;
     
     try {
-        // Envío de Email
         await apiInstance.sendTransacEmail(SendSmtpEmail);
         console.log(`Correo enviado a ${email}`);
         return true;
     } catch (error) {
         console.error("Error enviando email:", error);
-        return false; // Para que el controlador sepa que falló
+        return false; 
     }
 }
 
