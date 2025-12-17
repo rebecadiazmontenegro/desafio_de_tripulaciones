@@ -153,6 +153,11 @@
       backdrop-filter: blur(12px);
       transition: all 0.3s ease;
 
+      h3 {
+        margin-top: 0px;
+        margin-bottom: 0px;
+      }
+
       svg {
         color: var(--dark);
       }
@@ -261,7 +266,6 @@
   }
 }
 
-
 .profileButtons button {
   opacity: 0;
   animation: fadeInUp 0.6s ease-out forwards;
@@ -337,13 +341,10 @@
           font-size: 24px;
           margin-top: 0px;
           margin-bottom: 0px;
-          margin-top: 0px;
         }
 
         p {
           font-size: 16px;
-               margin-top: 0px;
-      margin-bottom: 0px;
         }
 
         svg {
