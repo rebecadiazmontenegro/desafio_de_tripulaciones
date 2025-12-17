@@ -34,35 +34,27 @@ const LoginForm = () => {
       const { ok, data } = await loginUser(formData.email, formData.password);
 
       if (ok) {
-        // VERIFICAR SI NECESITA CAMBIAR CONTRASEÑA (PRIMERO)
         if (data.action === "FORCE_PASSWORD_CHANGE") {
-          console.log("🔄 Usuario con contraseña temporal detectado");
-          
-          // Guardar token temporal si viene
+          console.log("Usuario con contraseña temporal detectado");
+
           if (data.token) {
             localStorage.setItem("token", data.token);
           }
-          
-          // Navegar a cambiar contraseña con los datos necesarios
-          navigate("/change/password", {  // ← Corregido: guion, no slash
-            state: { 
+
+          navigate("/change/password", {
+            state: {
               email: data.user?.email || formData.email,
               tempPassword: formData.password,
-              isTemporaryPassword: true
-            }
+              isTemporaryPassword: true,
+            },
           });
-          return;  // ← IMPORTANTE: return para no continuar
+          return;
         }
 
-        // ✅ LOGIN NORMAL (si no necesita cambiar contraseña)
-        console.log("✅ Login exitoso");
-        
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
 
-        // Navegar al dashboard
         navigate("/dashboard", { replace: true });
-
       } else {
         setError(data.message || "Error en el login");
       }
@@ -76,15 +68,14 @@ const LoginForm = () => {
 
   return (
     <section className="loginContainer">
-      
-      <div className="loginHeader">
+      <article className="loginHeader">
         <h1>Iniciar Sesión</h1>
         <p>Ingresa tus credenciales para continuar</p>
-      </div>
+      </article>
 
       <form className="loginForm">
         {error && <div className="loginError">{error}</div>}
-        
+
         <label htmlFor="email">Email</label>
         <input
           type="email"
@@ -95,7 +86,7 @@ const LoginForm = () => {
           placeholder="Introduce tu correo"
           disabled={loading}
         />
-        
+
         <label htmlFor="password">Contraseña</label>
         <input
           type="password"
@@ -107,10 +98,10 @@ const LoginForm = () => {
           disabled={loading}
         />
 
-        <button 
-            className="loginButton" 
-            onClick={handleSubmit} 
-            disabled={loading}
+        <button
+          className="loginButton"
+          onClick={handleSubmit}
+          disabled={loading}
         >
           {loading ? "Iniciando sesión..." : "Iniciar Sesión"}
         </button>

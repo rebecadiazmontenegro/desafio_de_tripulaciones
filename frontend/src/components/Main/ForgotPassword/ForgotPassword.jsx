@@ -40,7 +40,6 @@ const ForgotPassword = () => {
         );
         setEmail("");
 
-        // Redirigir al login después de 3 segundos
         setTimeout(() => {
           navigate("/login");
         }, 3000);
@@ -56,8 +55,8 @@ const ForgotPassword = () => {
   };
 
   return (
-    <section className="forgot-password-section">
-      <article className="forgot-password-container">
+    <section className="forgotPassword">
+      <article className="forgotPasswordContainer">
         <h1>¿Olvidaste tu contraseña?</h1>
         <p>
           Introduce tu email y te enviaremos una contraseña temporal para que
@@ -65,16 +64,16 @@ const ForgotPassword = () => {
         </p>
 
         {error && (
-          <div className="error-message">
-            <p>❌ {error}</p>
+          <div className="errorMessage">
+            <p>{error}</p>
           </div>
         )}
 
         {success && (
-          <div className="success-message">
-            <p>✅ {success}</p>
-            <p style={{ marginTop: "0.5rem", fontSize: "0.9rem" }}>
-              📧 Revisa tu bandeja de entrada (y spam)
+          <div className="successMessage">
+            <p>{success}</p>
+            <p>
+              Revisa tu bandeja de entrada (y spam)
             </p>
           </div>
         )}
@@ -88,7 +87,7 @@ const ForgotPassword = () => {
               name="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="tu@email.com"
+              placeholder="Introduce tu correo"
               disabled={loading || success}
               required
             />

@@ -258,7 +258,7 @@ const Chat = () => {
   }
 
   return (
-    <section>
+    <section className="chat">
       <h1>Tu chatbot</h1>
       <article className="actionButtons">
         <button className="backButton" onClick={() => navigate(-1)}>

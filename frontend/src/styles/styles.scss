@@ -14,6 +14,8 @@
 @use "./components/WorkerDashBoard";
 @use "./components/AdminDashBoard";
 
+@use "./components/ChangePassword";
+
 @use "./components/Chat";
 @use "./components/ChartRenderer";
 
@@ -21,3 +23,6 @@
 @use "./components/UserCard";
 
 @use "./components/SignUpForm";
+
+@use "./components/Guia";
+@use "./components/ForgotPassword";

@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { changePassword, changePasswordFirstTime } from "../../../service/users.service";
+import {
+  changePassword,
+  changePasswordFirstTime,
+} from "../../../service/users.service";
 
 const ChangePassword = () => {
   const navigate = useNavigate();
@@ -23,14 +26,12 @@ const ChangePassword = () => {
   const [isFirstTimeChange, setIsFirstTimeChange] = useState(false);
 
   useEffect(() => {
-    // CASO 1: Viene del login con contraseña temporal
     if (isTemporaryPassword && emailFromLogin) {
       setUserEmail(emailFromLogin);
       setIsFirstTimeChange(true);
       return;
     }
 
-    // CASO 2: Usuario ya autenticado quiere cambiar contraseña
     const token = localStorage.getItem("token");
     const user = localStorage.getItem("user");
 
@@ -66,7 +67,6 @@ const ChangePassword = () => {
 
     const { currentPassword, newPassword, confirmPassword } = formData;
 
-    // Validaciones
     if (!currentPassword || !newPassword || !confirmPassword) {
       setError("Todos los campos son requeridos");
       setLoading(false);
@@ -94,16 +94,13 @@ const ChangePassword = () => {
     try {
       let ok, data;
 
-      // Llamar al servicio correcto según el caso
       if (isFirstTimeChange) {
-        // Primer cambio: sin token
         ({ ok, data } = await changePasswordFirstTime(
           userEmail,
           currentPassword,
           newPassword
         ));
       } else {
-        // Cambio normal: con token
         ({ ok, data } = await changePassword(currentPassword, newPassword));
       }
 
@@ -112,28 +109,24 @@ const ChangePassword = () => {
           data.message || data.msg || "Contraseña actualizada correctamente"
         );
 
-        // Limpiar formulario
         setFormData({
           currentPassword: "",
           newPassword: "",
           confirmPassword: "",
         });
 
-        // Redirigir según el caso
         setTimeout(() => {
           if (isFirstTimeChange) {
-            // Primer cambio: limpiar todo y volver al login
             localStorage.removeItem("token");
             localStorage.removeItem("user");
             navigate("/login", {
               replace: true,
               state: {
                 message:
-                  "✅ Contraseña actualizada. Inicia sesión con tu nueva contraseña.",
+                  "Contraseña actualizada. Inicia sesión con tu nueva contraseña.",
               },
             });
           } else {
-            // Cambio normal: volver al dashboard
             navigate("/dashboard", {
               replace: true,
             });
@@ -156,17 +149,14 @@ const ChangePassword = () => {
   };
 
   const handleCancel = () => {
-    // Si es primer cambio, NO puede cancelar
     if (isFirstTimeChange) {
-      setError("⚠️ Debes cambiar tu contraseña temporal antes de continuar");
+      setError("Debes cambiar tu contraseña temporal antes de continuar");
       return;
     }
 
-    // Cambio normal: puede volver al dashboard
     navigate("/dashboard");
   };
 
-  // ✅ Loading mientras obtiene el email
   if (!userEmail) {
     return (
       <section>
@@ -177,12 +167,13 @@ const ChangePassword = () => {
     );
   }
 
-  // ✅ AQUÍ VA EL FORMULARIO PRINCIPAL (cuando YA hay userEmail)
   return (
-    <section>
+    <section className="changePassword">
       <article>
         <h1>
-          {isFirstTimeChange ? "⚠️ Cambio Obligatorio de Contraseña" : "Cambiar Contraseña"}
+          {isFirstTimeChange
+            ? "Cambio Obligatorio de Contraseña"
+            : "Cambiar Contraseña"}
         </h1>
         <p>
           {isFirstTimeChange
@@ -195,13 +186,13 @@ const ChangePassword = () => {
       <article>
         {error && (
           <div className="error-message">
-            <p>❌ {error}</p>
+            <p>{error}</p>
           </div>
         )}
 
         {success && (
           <div className="success-message">
-            <p>✅ {success}</p>
+            <p>{success}</p>
           </div>
         )}
 
