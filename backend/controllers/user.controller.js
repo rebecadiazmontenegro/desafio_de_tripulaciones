@@ -30,7 +30,7 @@ const loginUser = async (req, res) => {
         const diffMs = lockDate - now;
         const diffMins = Math.ceil(diffMs / 60000);
         return res.status(429).json({ 
-          message: `Cuenta bloqueada temporalmente. Inténtalo de nuevo en ${diffMins} minutos.` 
+          message: `Cuenta bloqueada temporalmente. Inténtalo más tarde.` 
         });
       }
     }
