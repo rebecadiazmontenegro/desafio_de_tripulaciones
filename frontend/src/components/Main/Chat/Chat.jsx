@@ -90,13 +90,15 @@ const Chat = () => {
         };
       });
 
+      const finalHistoryChat = [welcomeMessage, ...formatTranslation];
+
       // Guardamos todo en la "Caja Fuerte"
-      historyChat.current = formatTranslation;
+      historyChat.current = finalHistoryChat;
       // Sacamos los últimos 10 de primeras
-      const initialChat = formatTranslation.slice(-10);
+      const initialChat = finalHistoryChat.slice(-10);
 
       // Guardamos en el estado, Bienvenida e Historial Antiguo
-      setMessages([welcomeMessage, ...initialChat ]);
+      setMessages([ ...initialChat ]);
     } catch (error) {
             console.error("No se pudo cargar el historial", error);
         }
@@ -116,11 +118,13 @@ const Chat = () => {
     // Sacamos un Trozo más grande de la Caja Fuerte
     const newMessages = historyChat.current.slice(-newCount);
 
-    setMessages(b => {
-      // Mantener Mensaje de Bienvenida siempre arriba
-      const welcome = b[0];
-      return [ welcome, ...newMessages];
-    })
+    setMessages(newMessages);
+
+    // setMessages(() => {
+    //   // Mantener Mensaje de Bienvenida siempre arriba
+    //   const welcome = b[0];
+    //   return [ welcome, ...newMessages];
+    // })
   }
 
 
@@ -186,15 +190,11 @@ const Chat = () => {
     }
   };
 
-  console.log("Total Historial (Ref):", historyChat.current.length);
-  console.log("Mensajes en Pantalla:", messages.length);
-  console.log("¿Debería salir botón?:", historyChat.current.length > (messages.length - 1));
-
 
   return (
     <div className="chat-area">
       {/* Mostrar botón si en la caja fuerte hay más mensajes de los que vemos */}
-      { historyChat.current.length > (messages.length -1) && (
+      { historyChat.current.length > messages.length && (
         <button onClick={handlePages}>Cargar Mensajes Anteriores</button>
       )}
       <div className="messages-window">
