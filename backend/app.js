@@ -15,14 +15,27 @@ app.use(
       directives: {
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'"],
-        styleSrc: ["'self'", "'unsafe-inline'"],
-        connectSrc: ["'self'", "https://proyecto-chat-bot-grupo-2.onrender.com"],
+        styleSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "https://fonts.googleapis.com"
+        ],
+        fontSrc: [
+          "'self'",
+          "https://fonts.gstatic.com"
+        ],
+        connectSrc: [
+          "'self'",
+          "https://proyecto-chat-bot-grupo-2.onrender.com",
+          "https://kairo-ejt6.onrender.com"
+        ],
         imgSrc: ["'self'", "data:"],
-        fontSrc: ["'self'", "https:"],
       },
     },
   })
 );
+
+
 
 app.use(
   cors({

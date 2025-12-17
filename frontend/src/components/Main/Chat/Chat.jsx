@@ -63,39 +63,32 @@ const Chat = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Función para formatear la respuesta del bot
   const formatBotResponse = (text) => {
     if (!text) return null;
 
-    // Detectar si contiene una tabla (patrón: | texto | texto |)
     const hasTable = text.includes('|') && text.split('|').length > 5;
     
     if (hasTable) {
       return parseTableResponse(text);
     }
 
-    // Detectar listas numeradas
     const hasNumberedList = /\d+\.\s\*\*/.test(text) || /\d+\.\s[A-Z]/.test(text);
     if (hasNumberedList) {
       return parseNumberedList(text);
     }
 
-    // Formatear texto normal con negritas
     return parseFormattedText(text);
   };
 
-  // Parsear tablas en formato markdown
   const parseTableResponse = (text) => {
     const lines = text.split('\n').filter(line => line.trim());
-    
-    // Buscar el inicio de la tabla
+
     const tableStart = lines.findIndex(line => line.includes('|') && line.split('|').length > 2);
     if (tableStart === -1) return <span>{text}</span>;
 
     const beforeTable = lines.slice(0, tableStart).join('\n');
     const tableLines = lines.slice(tableStart);
     
-    // Separar encabezado de filas
     const headerLine = tableLines[0];
     const separatorIndex = tableLines.findIndex(line => line.includes('---'));
     const dataLines = tableLines.slice(separatorIndex + 1).filter(line => line.includes('|'));
