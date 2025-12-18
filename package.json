@@ -1,0 +1,37 @@
+{
+  "name": "desafio_de_tripulaciones",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+"scripts": {
+  "install": "npm install --prefix backend && npm install --prefix frontend",
+  "start:backend": "node backend/app.js",
+  "start:frontend": "npm run build --prefix frontend && npm run start --prefix frontend",
+  "start": "npm run start:backend",
+  "build": "npm run build --prefix frontend",
+  "test": "echo \"Error: no test specified\" && exit 1",
+  "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
+  "seed": "npm --prefix ./backend run seed"
+},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rebecadiazmontenegro/desafio_de_tripulaciones.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rebecadiazmontenegro/desafio_de_tripulaciones/issues"
+  },
+  "homepage": "https://github.com/rebecadiazmontenegro/desafio_de_tripulaciones#readme",
+  "dependencies": {
+    "axios": "^1.13.2",
+    "nodemon": "^3.1.11",
+    "chart.js": "^4.5.1",
+    "react-chartjs-2": "^5.3.1"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "create-react-component-folder": "^0.3.7"
+  }
+}

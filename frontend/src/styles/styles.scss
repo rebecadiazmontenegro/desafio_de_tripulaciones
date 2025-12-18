@@ -1,0 +1,28 @@
+@use "./views/index";
+@use "./views/App";
+
+@use "./components/Header";
+
+@use "./components/Home";
+@use "./components/Graphics";
+
+@use "./components/Login";
+@use "./components/LoginForm";
+@use "./components/GraphicLogin";
+
+@use "./components/ManagerDashboard";
+@use "./components/WorkerDashBoard";
+@use "./components/AdminDashBoard";
+
+@use "./components/ChangePassword";
+
+@use "./components/Chat";
+@use "./components/ChartRenderer";
+
+@use "./components/UsersList";
+@use "./components/UserCard";
+
+@use "./components/SignUpForm";
+
+@use "./components/Guia";
+@use "./components/ForgotPassword";

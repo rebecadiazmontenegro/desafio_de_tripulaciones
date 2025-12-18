@@ -1,0 +1,338 @@
+.chat {
+  .chatHeader {
+    h1 {
+      font-size: 70px;
+      margin-bottom: 20px;
+    }
+
+    p {
+      color: var(--white);
+
+      padding-bottom: 10px;
+      border-bottom: 4px solid rgba(255, 255, 255, 0.6);
+    }
+  }
+
+  .chatArea {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 700px;
+    margin: 40px auto;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 24px;
+    border: 2px solid var(--white);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    overflow: hidden;
+    z-index: 2;
+    animation: fadeIn 0.5s ease-in;
+    width: 90%;
+  }
+
+  .messagesWindow {
+    flex-grow: 1;
+    width: 100%;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .message-item {
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+    padding: 14px 18px;
+    border-radius: 20px;
+    line-height: 1.6;
+    margin: 12px;
+    font-size: 0.95em;
+    color: var(--color-text-dark);
+    animation: slideIn 0.5s ease forwards;
+
+    strong {
+      font-weight: var(--font-medium);
+      margin-bottom: 4px;
+      font-size: 0.85em;
+      opacity: 0.7;
+    }
+  }
+
+  .message-item.bot {
+    align-self: flex-start;
+    background-color: var(--white);
+    border-top-left-radius: 6px;
+  }
+
+  .message-item.user {
+    align-self: flex-end;
+    background-color: #a8c5f0;
+    border-top-right-radius: 6px;
+  }
+
+  .inputArea {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 16px 20px;
+    gap: 12px;
+    background-color: var(--dark);
+    border-top: 1px solid var(--dark);
+  }
+
+  .inputArea input[type="text"] {
+    width: 80%;
+    max-width: 100%;
+    padding: 12px 18px;
+    border-radius: 30px;
+    border: 1px solid rgba(6, 18, 48, 0.2);
+    font-size: 1em;
+    transition: all 0.3s ease;
+
+    &:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(66, 105, 210, 0.2);
+    }
+  }
+
+  .chatButtons {
+    display: flex;
+    flex-direction: column;
+    justify-self: center;
+    gap: 12px;
+  }
+
+  .sendButton,
+  .downloadPDFButton,
+  .downloadCSVButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border-radius: 30px;
+    padding: 10px 20px;
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+  }
+
+  .sendButton {
+    background-color: var(--dark);
+    color: var(--white);
+    border: 2px solid var(--white);
+
+    &:hover:not(:disabled) {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 6px 15px rgba(6, 18, 48, 0.2);
+      background-color: var(--white);
+      color: var(--dark);
+    }
+
+    &:disabled {
+      background-color: rgba(100, 100, 100, 0.4);
+      cursor: not-allowed;
+    }
+  }
+
+  .downloadPDFButton {
+    background-color: #4caf50;
+    border: none;
+    color: #ffffff;
+
+    &:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  .downloadCSVButton {
+    background-color: #2196f3;
+    border: none;
+    margin-top: 16px;
+    color: var(--white);
+    font-size: 0.9em;
+
+    &:hover {
+      transform: translateY(-1px) scale(1.02);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  .actionButtons {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+  }
+
+  .backButton,
+  .guideButton {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: var(--white);
+    color: var(--dark);
+    border: none;
+    border-radius: 24px;
+    padding: 8px 16px;
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    margin: 0 auto;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 6px 15px rgba(6, 18, 48, 0.3);
+    }
+  }
+
+  .submitButton {
+    background-color: var(--dark);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 12px 28px;
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    min-width: 100px;
+    transition: all 0.3s ease;
+
+    &:hover:not(:disabled) {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 6px 20px rgba(6, 18, 48, 0.3);
+    }
+
+    &:disabled {
+      background-color: rgba(100, 100, 100, 0.4);
+      cursor: not-allowed;
+    }
+  }
+
+  .dataTable,
+  .response-table {
+    width: 100%;
+    max-width: 100%;
+    border-collapse: collapse;
+    overflow-x: auto;
+  }
+
+  .dataTable th,
+  .dataTable td,
+  .response-table th,
+  .response-table td {
+    border: 1px solid rgba(6, 18, 48, 0.2);
+    padding: 8px;
+    text-align: left;
+    background: rgba(255, 255, 255, 0.5);
+    word-wrap: break-word;
+  }
+
+  .dataTable tr:nth-child(even),
+  .response-table tr:nth-child(even) {
+    background-color: rgba(66, 105, 210, 0.05);
+  }
+
+  .response-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 12px;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(-20px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .actionButtons {
+      .backButton,
+      .guideButton {
+        justify-content: center;
+        width: 300px;
+        padding: 16px 24px;
+        font-size: 20px;
+      }
+    }
+    .chatArea {
+      width: 1200px;
+      height: 700px;
+    }
+
+    .message-item {
+      max-width: 90%;
+      margin: 20px;
+      margin-top: 5px;
+      padding: 35px 28px;
+      font-size: 1.15em;
+    }
+
+    .inputArea {
+      padding: 25px 40px;
+      width: 100%;
+    }
+
+    h1 {
+      font-size: 80px;
+    }
+
+    .chatButtons {
+      flex-direction: row;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .sendButton,
+    .downloadPDFButton,
+    .downloadCSVButton {
+      font-size: 1em;
+    }
+
+    .downloadCSVButton {
+      font-size: 16px;
+      padding: 8px 28px;
+      border: none;
+      margin-top: 20px;
+    }
+
+    .chatButtons {
+      flex-direction: row;
+      gap: 12px;
+      width: 700px;
+      justify-content: center;
+      flex-wrap: nowrap;
+    }
+
+    .sendButton,
+    .downloadPDFButton {
+      flex: 1;
+      width: 500px;
+    }
+  }
+}
