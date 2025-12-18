@@ -31,10 +31,7 @@ const Guia = () => {
               ¿Qué es este chatbot?
             </h2>
             <p>
-              Este chatbot permite que cualquier usuario realice preguntas sobre
-              los datos de e-commerce en lenguaje natural (español o inglés) y
-              obtenga respuestas automáticas gracias a la traducción de texto a
-              SQL.
+             Este chatbot permite a cualquier usuario realizar preguntas sobre los datos de e-commerce en lenguaje natural y obtener visualizaciones, datos y un análisis.
             </p>
           </div>
 
@@ -48,8 +45,11 @@ const Guia = () => {
                 <b>Escribe tu pregunta</b> en el chat, por ejemplo:
                 <ul>
                   <li>¿Cuántas ventas hubo en 2024?</li>
-                  <li>Top 5 productos más vendidos en 2023</li>
+                  <li>Top 10 productos más vendidos en 2023 por categoria</li>
                   <li>Promedio de ventas por país en 2024</li>
+                   <li>Genera un gráfico con la cuota de medios de pago</li>
+                  <li>Muestra los 50 clientes con mayor AOV junto a sus datos demográficos</li>
+                  <li>Calcula el beneficio total por país y genera un grafico de barras</li>
                 </ul>
               </li>
               <li>
@@ -114,10 +114,7 @@ const Guia = () => {
           </h2>
           <ul>
             <li>Usa frases claras y directas.</li>
-            <li>Puedes preguntar en español o inglés.</li>
-            <li>
-              Si no entiendes una respuesta, prueba a reformular la pregunta.
-            </li>
+            <li>Puedes preguntar en cualquier idioma.</li>
             <li>
               No te olvides de indicar tu gráfico favorito: de líneas, barras o
               incluso de quesito.
