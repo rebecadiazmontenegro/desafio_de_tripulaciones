@@ -1,5 +1,8 @@
 # 📨 Chatbot Interno - Proyecto Grupo 2
 Sistema de chatbot interno con autenticación basada en roles y acceso a datos departamentales mediante integración con API de Data Science.
+
+![Header](./frontend/src/assets/header_readme.png)
+
 ## 📄 Tabla de Contenidos
 - [Características](#características)
 - [Tecnologías](#tecnologías)
@@ -22,6 +25,9 @@ Sistema de chatbot interno con autenticación basada en roles y acceso a datos d
 - **LocalStorage** - Persistencia de sesión en el navegador
 - **Rutas Protegidas** - Navegación segura con verificación de autenticación
 - **Encriptación bcrypt** - Passwords hasheados de forma segura
+
+![Header](./frontend/src/assets/mockup_graficos.png)
+
 ## 🛠️ Tecnologías
 ### Frontend
 - React 18
@@ -111,36 +117,36 @@ proyecto-chatbot-grupo-2/
 │
 ├── backend/
 │   ├── config/
-│   │   ├── db_pgsql.js           # Configuración PostgreSQL
-│   │   └── googleAuth.js         # Configuración Google OAuth
+│   │   ├── db_pgsql.js         
+│   │   └── googleAuth.js        
 │   ├── controllers/
-│   │   └── user.controller.js    # Lógica de negocio usuarios
+│   │   └── user.controller.js    
 │   ├── middlewares/
-│   │   ├── authMiddleware.js     # Verificación JWT
-│   │   ├── error404.js           # Manejo de rutas no encontradas
-│   │   └── validateField.js      # Validación de campos
+│   │   ├── authMiddleware.js     
+│   │   ├── error404.js           
+│   │   └── validateField.js  
 │   ├── models/
-│   │   └── user.model.js         # Modelo de datos usuarios
+│   │   └── user.model.js        
 │   ├── queries/
-│   │   └── user.queries.js       # Consultas SQL
+│   │   └── user.queries.js     
 │   ├── routes/
-│   │   └── user.routes.js        # Endpoints API
+│   │   └── user.routes.js    
 │   ├── services/
-│   │   └── email_services.js     # Servicio de emails
+│   │   └── email_services.js   
 │   ├── validator/
-│   │   └── users.validator.js    # Validaciones de entrada
-│   ├── .env                      # Variables de entorno
-│   ├── .env.example              # Ejemplo de configuración
+│   │   └── users.validator.js    
+│   ├── .env                     
+│   ├── .env.example             
 │   ├── .gitignore
-│   ├── app.js                    # Configuración Express
+│   ├── app.js                  
 │   ├── package.json
 │   ├── package-lock.json
-│   └── queries.sql               # Scripts SQL base de datos
+│   └── queries.sql              
 │
 ├── frontend/
 │   ├── public/
-│   │   ├── _headers              # Headers de seguridad
-│   │   └── vite.svg              # Icono de Vite
+│   │   ├── _headers           
+│   │   └── vite.svg           
 │   ├── src/
 │   │   ├── assets/
 │   │   │   └── react.svg
@@ -183,25 +189,25 @@ proyecto-chatbot-grupo-2/
 │   │   │   │   ├── Main.css
 │   │   │   │   └── Main.jsx
 │   │   ├── service/
-│   │   │   ├── chat.service.js      # Lógica del chat
-│   │   │   └── users.service.js     # Lógica de usuarios
+│   │   │   ├── chat.service.js      
+│   │   │   └── users.service.js     
 │   │   ├── styles/
 │   │   │   ├── App.css
 │   │   │   └── index.css
-│   │   ├── App.jsx                  # Componente principal
-│   │   └── main.jsx                 # Punto de entrada
-│   ├── .env                         # Variables de entorno frontend
+│   │   ├── App.jsx                  
+│   │   └── main.jsx              
+│   ├── .env                         
 │   ├── .env.example
 │   ├── .gitignore
 │   ├── eslint.config.js
 │   ├── index.html
 │   ├── package.json
 │   ├── package-lock.json
-│   ├── vite.config.js               # Configuración Vite
-│   └── Dockerfile                   # Docker (opcional)
+│   └── vite.config.js                   
 │
 ├── .gitignore
-├── Dockerfile                       # Docker raíz (opcional)
+├── package.json
+├── Dockerfile                  
 └── README.md
 ```
 ## 🔗 API Endpoints
@@ -313,6 +319,9 @@ proyecto-chatbot-grupo-2/
 - Acceder al chat
 - Cambiar contraseña
 - Acceso solo a su departamento
+
+![Header](./frontend/src/assets/mockup_perfiles.png)
+
 ## 🖥️ Uso
 ### 1. Iniciar el Backend
 ```bash
