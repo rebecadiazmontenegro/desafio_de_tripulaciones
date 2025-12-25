@@ -80,37 +80,7 @@ CREATE DATABASE chatbot_db;
 \i /ruta/a/tu/proyecto/backend/queries.sql
 ```
 O copia y ejecuta el contenido del archivo `queries.sql` directamente en pgAdmin o tu cliente PostgreSQL favorito.
-## ⚙️ Configuración
-### Backend - Archivo `.env`
-Crear un archivo `.env` en la carpeta `backend` basándote en `.env.example`:
-```env
-# Base de datos PostgreSQL
-DB_HOST=localhost
-DB_USER=postgres
-DB_PASSWORD=tu_password
-DB_NAME=chatbot_db
-DB_PORT=5432
-# JWT
-JWT_SECRET=tu_clave_secreta_muy_segura
-# Servidor
-PORT=4000
-NODE_ENV=development
-# API Externa de Data Science
-DATA_API_URL=https://proyecto-chat-bot-grupo-2.onrender.com
-# Google OAuth (opcional)
-GOOGLE_CLIENT_ID=tu_client_id
-GOOGLE_CLIENT_SECRET=tu_client_secret
-# Email Service (opcional)
-EMAIL_USER=tu_email@gmail.com
-EMAIL_PASSWORD=tu_app_password
-```
-### Frontend - Configuración de API
-En `src/service/chat.service.js` y `src/service/users.service.js`, verificar las URLs del backend.
-Crear archivo `.env` en la carpeta `frontend`:
-```env
-VITE_API_URL=http://localhost:4000/api
-VITE_DATA_API_URL=https://proyecto-chat-bot-grupo-2.onrender.com
-```
+
 ## 📁 Estructura del Proyecto
 ```
 proyecto-chatbot-grupo-2/
