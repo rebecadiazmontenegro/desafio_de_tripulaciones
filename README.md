@@ -335,58 +335,9 @@ cd frontend
 npm run dev
 ```
 La aplicación estará disponible en `http://localhost:5173`
-### 3. Credenciales de Prueba
-```
-Admin:
-- Email: admin@empresa.com
-- Password: admin123
-- Rol: admin
-- Departamento: TI
-Manager:
-- Email: manager@empresa.com
-- Password: manager123
-- Rol: manager
-- Departamento: ventas
-Worker:
-- Email: worker@empresa.com
-- Password: worker123
-- Rol: worker
-- Departamento: ventas
-```
+
 ### 4. Flujo de Uso
 1. **Login** → Iniciar sesión con credenciales
 2. **Dashboard** → Acceder al panel según tu rol
 3. **Chat** → Hacer consultas relacionadas con tu departamento
 4. **Gestión** → Administrar usuarios (según permisos)
-## 🗝️ Variables de Entorno
-### Backend `.env` (Ejemplo completo)
-```env
-# Base de datos PostgreSQL
-DB_HOST=localhost
-DB_USER=postgres
-DB_PASSWORD=MiPasswordSeguro123
-DB_NAME=chatbot_db
-DB_PORT=5432
-# JWT Secret (generar uno aleatorio largo)
-JWT_SECRET=8f9a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d0e9f8
-JWT_EXPIRES_IN=24h
-# Sesiones
-SESSION_SECRET=otra_clave_secreta_para_sesiones
-SESSION_MAX_AGE=86400000
-# Puerto del servidor
-PORT=4000
-NODE_ENV=development
-# API Externa de Data Science
-DATA_API_URL=https://proyecto-chat-bot-grupo-2.onrender.com
-DATA_API_TIMEOUT=30000
-# Google OAuth (opcional)
-GOOGLE_CLIENT_ID=tu_google_client_id.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=tu_google_secret
-# Email Service (opcional, para recuperación de contraseña)
-EMAIL_USER=noreply@tuempresa.com
-EMAIL_PASSWORD=tu_app_password_gmail
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-# CORS (opcional)
-FRONTEND_URL=http://localhost:5173
-```
